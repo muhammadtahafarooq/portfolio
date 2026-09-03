@@ -36,6 +36,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          'var(--font-inter)',
           'Inter',
           'ui-sans-serif',
           'system-ui',
@@ -45,6 +46,7 @@ const config: Config = {
           'sans-serif',
         ],
         mono: [
+          'var(--font-jetbrains)',
           'JetBrains Mono',
           'SFMono-Regular',
           'Consolas',
@@ -93,12 +95,31 @@ const config: Config = {
       transitionDuration: {
         'fast': '150ms',
         'normal': '300ms',
-        'slow': '600ms',
-        'entrance': '600-900ms',
+        'smooth': '500ms',
+        'cinematic': '800ms',
+        'slow': '1200ms',
+      },
+      transitionTimingFunction: {
+        'standard': 'cubic-bezier(0.22, 1, 0.36, 1)',
+        'cinematic': 'cubic-bezier(0.16, 1, 0.3, 1)',
       },
       boxShadow: {
         'glow': '0 0 20px rgba(139, 92, 246, 0.3)',
         'glow-lg': '0 0 40px rgba(139, 92, 246, 0.4)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.6s ease-out forwards',
+        'slide-up': 'slideUp 0.6s ease-out forwards',
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        slideUp: {
+          from: { opacity: '0', transform: 'translateY(24px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
       },
     },
   },
