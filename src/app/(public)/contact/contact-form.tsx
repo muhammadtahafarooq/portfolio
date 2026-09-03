@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { contactFormSchema, type ContactFormData } from '@/lib/validators'
@@ -44,7 +45,11 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
         <label htmlFor="name" className="block text-sm font-medium text-text mb-2">
           Name <span className="text-error">*</span>
         </label>
@@ -56,9 +61,13 @@ export function ContactForm() {
           placeholder="Your name"
         />
         {errors.name && <p className="text-error text-sm mt-1">{errors.name.message}</p>}
-      </div>
+      </motion.div>
 
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+      >
         <label htmlFor="email" className="block text-sm font-medium text-text mb-2">
           Email <span className="text-error">*</span>
         </label>
@@ -70,9 +79,13 @@ export function ContactForm() {
           placeholder="your@email.com"
         />
         {errors.email && <p className="text-error text-sm mt-1">{errors.email.message}</p>}
-      </div>
+      </motion.div>
 
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
         <label htmlFor="subject" className="block text-sm font-medium text-text mb-2">
           Subject
         </label>
@@ -84,9 +97,13 @@ export function ContactForm() {
           placeholder="What's this about?"
         />
         {errors.subject && <p className="text-error text-sm mt-1">{errors.subject.message}</p>}
-      </div>
+      </motion.div>
 
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+      >
         <label htmlFor="message" className="block text-sm font-medium text-text mb-2">
           Message <span className="text-error">*</span>
         </label>
@@ -98,38 +115,58 @@ export function ContactForm() {
           placeholder="Your message..."
         />
         {errors.message && <p className="text-error text-sm mt-1">{errors.message.message}</p>}
-      </div>
+      </motion.div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
       >
-        {isSubmitting ? (
-          <span className="flex items-center gap-2">
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            Sending...
-          </span>
-        ) : (
-          'Send Message'
+        <motion.button
+          type="submit"
+          disabled={isSubmitting}
+          className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={isSubmitting ? {} : { scale: 1.01 }}
+          whileTap={isSubmitting ? {} : { scale: 0.99 }}
+        >
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Sending...
+            </span>
+          ) : (
+            'Send Message'
+          )}
+        </motion.button>
+      </motion.div>
+
+      <AnimatePresence>
+        {submitStatus === 'success' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-success/10 border border-success/20 rounded-lg p-4"
+          >
+            <p className="text-success text-sm">
+              Message sent successfully! I&apos;ll get back to you soon.
+            </p>
+          </motion.div>
         )}
-      </button>
 
-      {submitStatus === 'success' && (
-        <div className="bg-success/10 border border-success/20 rounded-lg p-4">
-          <p className="text-success text-sm">
-            Message sent successfully! I&apos;ll get back to you soon.
-          </p>
-        </div>
-      )}
-
-      {submitStatus === 'error' && (
-        <div className="bg-error/10 border border-error/20 rounded-lg p-4">
-          <p className="text-error text-sm">
-            Failed to send message. Please try again or email me directly.
-          </p>
-        </div>
-      )}
+        {submitStatus === 'error' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-error/10 border border-error/20 rounded-lg p-4"
+          >
+            <p className="text-error text-sm">
+              Failed to send message. Please try again or email me directly.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Honeypot */}
       <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />

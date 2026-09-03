@@ -34,7 +34,7 @@ export function Navbar({ socialLinks }: NavbarProps) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -51,11 +51,11 @@ export function Navbar({ socialLinks }: NavbarProps) {
     >
       <nav className="container-main h-20 flex items-center justify-between">
         {/* Logo */}
-        <Link
-          href="/"
-          className="text-lg font-semibold text-text hover:text-primary transition-colors"
-        >
-          MT
+        <Link href="/" className="relative group">
+          <span className="text-lg font-semibold text-text group-hover:text-primary transition-colors">
+            MT
+          </span>
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -65,30 +65,58 @@ export function Navbar({ socialLinks }: NavbarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'text-sm font-medium transition-colors duration-[150ms]',
+                'text-sm font-medium transition-colors duration-[150ms] relative group',
                 pathname === item.href ? 'text-primary' : 'text-text-secondary hover:text-text'
               )}
             >
               {item.label}
+              {pathname !== item.href && (
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
+              )}
             </Link>
           ))}
         </div>
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-4">
-          <Link href="/contact" className="btn-primary text-sm">
-            Contact
-          </Link>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link href="/contact" className="btn-primary text-sm">
+              Contact
+            </Link>
+          </motion.div>
         </div>
 
         {/* Mobile Menu Button */}
-        <button
+        <motion.button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden p-2 text-text-secondary hover:text-text transition-colors"
           aria-label="Toggle menu"
+          whileTap={{ scale: 0.95 }}
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X size={24} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Menu size={24} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
       </nav>
 
       {/* Mobile Navigation */}
@@ -102,23 +130,36 @@ export function Navbar({ socialLinks }: NavbarProps) {
             className="md:hidden bg-background border-b border-border overflow-hidden"
           >
             <div className="container-main py-6 space-y-4">
-              {navItems.map((item) => (
-                <Link
+              {navItems.map((item, index) => (
+                <motion.div
                   key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'block text-lg font-medium transition-colors',
-                    pathname === item.href ? 'text-primary' : 'text-text-secondary hover:text-text'
-                  )}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  {item.label}
-                </Link>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'block text-lg font-medium transition-colors',
+                      pathname === item.href
+                        ? 'text-primary'
+                        : 'text-text-secondary hover:text-text'
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                </motion.div>
               ))}
-              <div className="pt-4 border-t border-border">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navItems.length * 0.05 }}
+                className="pt-4 border-t border-border"
+              >
                 <Link href="/contact" className="btn-primary w-full">
                   Contact
                 </Link>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         )}
