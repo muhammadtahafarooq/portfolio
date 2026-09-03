@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, type ReactNode } from 'react'
+import Image from 'next/image'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { useReducedMotion } from '@/hooks'
 
@@ -9,16 +10,9 @@ interface ParallaxProps {
   className?: string
   speed?: number
   direction?: 'up' | 'down'
-  spring?: boolean
 }
 
-export function Parallax({
-  children,
-  className,
-  speed = 0.5,
-  direction = 'up',
-  spring = true,
-}: ParallaxProps) {
+export function Parallax({ children, className, speed = 0.5, direction = 'up' }: ParallaxProps) {
   const ref = useRef(null)
   const prefersReduced = useReducedMotion()
 
@@ -51,9 +45,19 @@ interface ParallaxImageProps {
   alt: string
   className?: string
   speed?: number
+  fill?: boolean
+  width?: number
+  height?: number
 }
 
-export function ParallaxImage({ src, alt, className, speed = 0.2 }: ParallaxImageProps) {
+export function ParallaxImage({
+  src,
+  alt,
+  className,
+  fill = true,
+  width,
+  height,
+}: ParallaxImageProps) {
   const ref = useRef(null)
   const prefersReduced = useReducedMotion()
 
@@ -69,20 +73,31 @@ export function ParallaxImage({ src, alt, className, speed = 0.2 }: ParallaxImag
 
   if (prefersReduced) {
     return (
-      <div className={`overflow-hidden ${className ?? ''}`}>
-        <img src={src} alt={alt} className="w-full h-full object-cover" />
+      <div className={`relative overflow-hidden ${className ?? ''}`}>
+        <Image
+          src={src}
+          alt={alt}
+          fill={fill}
+          width={!fill ? width : undefined}
+          height={!fill ? height : undefined}
+          className="object-cover"
+        />
       </div>
     )
   }
 
   return (
-    <div ref={ref} className={`overflow-hidden ${className ?? ''}`}>
-      <motion.img
-        src={src}
-        alt={alt}
-        className="w-full h-full object-cover scale-[1.05]"
-        style={{ y, scale }}
-      />
+    <div ref={ref} className={`relative overflow-hidden ${className ?? ''}`}>
+      <motion.div className="absolute inset-0 scale-[1.05]" style={{ y, scale }}>
+        <Image
+          src={src}
+          alt={alt}
+          fill={fill}
+          width={!fill ? width : undefined}
+          height={!fill ? height : undefined}
+          className="object-cover"
+        />
+      </motion.div>
     </div>
   )
 }
