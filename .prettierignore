@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+drizzle
+*.md
+package-lock.json
+pnpm-lock.yaml
+.env.local
+.env
+.vercel

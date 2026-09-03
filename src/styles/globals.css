@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+    --gradient-dark: linear-gradient(180deg, #111111 0%, #080808 100%);
+    --gradient-ambient: radial-gradient(
+      circle at center,
+      rgba(139, 92, 246, 0.12) 0%,
+      rgba(139, 92, 246, 0) 65%
+    );
+  }
+
+  * {
+    border-color: theme("colors.border.DEFAULT");
+  }
+
+  body {
+    background-color: theme("colors.background.DEFAULT");
+    color: theme("colors.text.DEFAULT");
+    font-family: theme("fontFamily.sans");
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: rgba(139, 92, 246, 0.3);
+    color: theme("colors.text.DEFAULT");
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: theme("colors.background.DEFAULT");
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: theme("colors.border.DEFAULT");
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme("colors.border.hover");
+  }
+}
+
+@layer components {
+  .container-main {
+    @apply max-w-container mx-auto px-container;
+  }
+
+  .section-padding {
+    @apply py-section;
+  }
+
+  .heading-h1 {
+    @apply text-h1 font-semibold leading-h1 tracking-h1;
+  }
+
+  .heading-h2 {
+    @apply text-h2 font-semibold leading-h2 tracking-h2;
+  }
+
+  .heading-h3 {
+    @apply text-h3 font-semibold leading-h3 tracking-h3;
+  }
+
+  .heading-h4 {
+    @apply text-h4 font-semibold leading-h4 tracking-h4;
+  }
+
+  .body-text {
+    @apply text-body leading-body text-text-secondary;
+  }
+
+  .technical-text {
+    @apply text-technical tracking-technical font-mono text-text-muted uppercase;
+  }
+
+  .card {
+    @apply bg-surface border border-border rounded-card p-6 transition-all duration-normal;
+  }
+
+  .card-hover {
+    @apply hover:bg-surface-hover hover:border-border-hover;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-hover text-white font-medium text-button 
+           px-6 py-3 rounded-button transition-all duration-fast 
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border border-border hover:border-border-hover text-text 
+           font-medium text-button px-6 py-3 rounded-button transition-all duration-fast
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  .input-field {
+    @apply w-full bg-background border border-border rounded-input px-4 py-3 text-body text-text
+           placeholder:text-text-muted transition-all duration-fast
+           focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary;
+  }
+
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .gradient-dark {
+    background: var(--gradient-dark);
+  }
+
+  .gradient-ambient {
+    background: var(--gradient-ambient);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+
+  .animate-mask-reveal {
+    animation: maskReveal 0.8s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes maskReveal {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
