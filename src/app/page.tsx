@@ -13,6 +13,8 @@ import {
   getAbout,
 } from '@/lib/db/queries'
 import { Reveal, Stagger, StaggerItem } from '@/components/motion'
+import { LiquidText } from '@/components/motion/liquid-text'
+import { TiltCard } from '@/components/motion/tilt-card'
 import { HomeNavbar } from '@/components/public/home-navbar'
 import { ContactSection } from '@/components/public/contact-section'
 import { StarField } from '@/components/3d/star-field'
@@ -71,11 +73,7 @@ export default async function HomePage() {
     <main className="min-h-screen">
       <HomeNavbar />
 
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-background">
-        <div className="absolute inset-0 pointer-events-none">
-          <StarField />
-        </div>
-
+      <section className="relative min-h-screen flex items-center overflow-hidden">
         <div className="container-main relative z-10 pt-20">
           <div className="grid-12 items-center min-h-[80vh]">
             <div className="col-span-12 md:col-span-7">
@@ -83,7 +81,7 @@ export default async function HomePage() {
                 <p className="section-label">Portfolio / 2026</p>
               </Reveal>
               <Reveal delay={0.2}>
-                <h1 className="heading-h1 mb-4 text-text">{profile?.name || 'Muhammad Taha'}</h1>
+                <LiquidText text={profile?.name || 'Muhammad Taha'} as="h1" className="mb-4" />
               </Reveal>
               <Reveal delay={0.3}>
                 <h2 className="heading-h3 text-primary mb-6">
@@ -113,28 +111,35 @@ export default async function HomePage() {
               delay={0.3}
               direction="right"
             >
-              <div className="relative aspect-[3/4] border border-border bg-surface">
-                {profile?.avatarUrl ? (
-                  <Image src={profile.avatarUrl} alt={profile.name} fill className="object-cover" />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-6xl font-bold text-primary/20">
-                      {(profile?.name || 'MT')
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </span>
-                  </div>
-                )}
-                <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-primary" />
-                <div className="absolute -top-2 -right-2 w-8 h-8 border-t-2 border-r-2 border-primary" />
-                <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-2 border-l-2 border-primary" />
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-primary" />
-                <div className="absolute top-1/2 -left-4 w-8 h-px bg-primary/30" />
-                <div className="absolute top-1/2 -right-4 w-8 h-px bg-primary/30" />
-                <div className="absolute -top-4 left-1/2 w-px h-8 bg-primary/30" />
-                <div className="absolute -bottom-4 left-1/2 w-px h-8 bg-primary/30" />
-              </div>
+              <TiltCard>
+                <div className="relative aspect-[3/4] border border-border bg-surface">
+                  {profile?.avatarUrl ? (
+                    <Image
+                      src={profile.avatarUrl}
+                      alt={profile.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-6xl font-bold text-primary/20">
+                        {(profile?.name || 'MT')
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-primary" />
+                  <div className="absolute -top-2 -right-2 w-8 h-8 border-t-2 border-r-2 border-primary" />
+                  <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-2 border-l-2 border-primary" />
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-primary" />
+                  <div className="absolute top-1/2 -left-4 w-8 h-px bg-primary/30" />
+                  <div className="absolute top-1/2 -right-4 w-8 h-px bg-primary/30" />
+                  <div className="absolute -top-4 left-1/2 w-px h-8 bg-primary/30" />
+                  <div className="absolute -bottom-4 left-1/2 w-px h-8 bg-primary/30" />
+                </div>
+              </TiltCard>
             </Reveal>
           </div>
         </div>

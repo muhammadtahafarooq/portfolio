@@ -59,7 +59,7 @@ export function ContactSection() {
           </div>
           <div className="flex items-center gap-3">
             <MapPin size={16} className="text-primary" />
-            <span className="text-sm text-text-secondary">Pakistan</span>
+            <span className="text-sm text-text-secondary">Multan, Pakistan</span>
           </div>
         </div>
       </div>

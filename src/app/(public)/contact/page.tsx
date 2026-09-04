@@ -60,10 +60,10 @@ export default function ContactPage() {
                 <div>
                   <p className="technical-text mb-2">Direct Protocol</p>
                   <a
-                    href="mailto:hello@muhammadtaha.dev"
+                    href="mailto:muhammadtahafarooq22@gmail.com"
                     className="text-text hover:text-primary transition-colors duration-300 text-body-lg"
                   >
-                    hello@muhammadtaha.dev
+                    muhammadtahafarooq22@gmail.com
                   </a>
                 </div>
               </Reveal>
@@ -71,7 +71,7 @@ export default function ContactPage() {
               <Reveal delay={0.2}>
                 <div>
                   <p className="technical-text mb-2">Physical Coordinates</p>
-                  <p className="text-text-secondary text-body-lg">Lahore, Pakistan</p>
+                  <p className="text-text-secondary text-body-lg">Multan, Pakistan</p>
                 </div>
               </Reveal>
 

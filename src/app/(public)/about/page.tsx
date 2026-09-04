@@ -112,7 +112,7 @@ export default async function AboutPage() {
                 <p className="font-technical-sm text-text-muted uppercase tracking-technical mb-1">
                   LOCATION
                 </p>
-                <p className="font-body-lg text-text-primary">Pakistan</p>
+                <p className="font-body-lg text-text-primary">Multan, Pakistan</p>
               </div>
               <div className="thin-divider" />
               <div>

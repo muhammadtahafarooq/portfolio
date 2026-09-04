@@ -90,7 +90,7 @@ export function ContactMotion() {
                       transition={{ duration: 0.2 }}
                     >
                       <p className="technical-text text-primary mb-1">Email</p>
-                      <p className="text-text-secondary text-sm">hello@muhammadtaha.dev</p>
+                      <p className="text-text-secondary text-sm">muhammadtahafarooq22@gmail.com</p>
                     </motion.div>
                   </StaggerItem>
                   <StaggerItem>
@@ -100,7 +100,7 @@ export function ContactMotion() {
                       transition={{ duration: 0.2 }}
                     >
                       <p className="technical-text text-primary mb-1">Location</p>
-                      <p className="text-text-secondary text-sm">Pakistan</p>
+                      <p className="text-text-secondary text-sm">Multan, Pakistan</p>
                     </motion.div>
                   </StaggerItem>
                   <StaggerItem>
