@@ -27,6 +27,9 @@ const config: Config = {
         'text-primary': '#F1EDE5',
         'text-secondary': '#B8B0A4',
         'text-muted': '#756E64',
+        text: {
+          DEFAULT: '#F1EDE5',
+        },
         border: {
           DEFAULT: '#302B25',
           hover: '#51483D',

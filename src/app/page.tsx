@@ -15,6 +15,7 @@ import {
 import { Reveal, Stagger, StaggerItem } from '@/components/motion'
 import { HomeNavbar } from '@/components/public/home-navbar'
 import { ContactSection } from '@/components/public/contact-section'
+import { StarField } from '@/components/3d/star-field'
 import type { Skill, Technology } from '@/types'
 
 function groupByCategory<T extends { category: string | null }>(items: T[]): Map<string, T[]> {
@@ -71,19 +72,8 @@ export default async function HomePage() {
       <HomeNavbar />
 
       <section className="relative min-h-screen flex items-center overflow-hidden bg-background">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute w-[600px] h-[600px] rounded-full bg-primary/5 blur-[150px] top-[10%] right-[10%]" />
-          <div className="absolute w-[400px] h-[400px] rounded-full bg-primary/3 blur-[120px] bottom-[20%] left-[5%]" />
-          <div className="absolute inset-0 opacity-[0.02]">
-            <div
-              className="w-full h-full"
-              style={{
-                backgroundImage:
-                  'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
-                backgroundSize: '60px 60px',
-              }}
-            />
-          </div>
+        <div className="absolute inset-0 pointer-events-none">
+          <StarField />
         </div>
 
         <div className="container-main relative z-10 pt-20">
