@@ -1,14 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Reveal } from '@/components/motion'
 import { contactFormSchema, type ContactFormData } from '@/lib/validators'
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const {
     register,
@@ -19,9 +20,9 @@ export function ContactForm() {
     resolver: zodResolver(contactFormSchema),
   })
 
-  const onSubmit = async (data: ContactFormData) => {
+  async function onSubmit(data: ContactFormData) {
     setIsSubmitting(true)
-    setSubmitStatus(null)
+    setError(null)
 
     try {
       const response = await fetch('/api/contact', {
@@ -30,146 +31,156 @@ export function ContactForm() {
         body: JSON.stringify(data),
       })
 
+      const result = await response.json()
+
       if (!response.ok) {
-        throw new Error('Failed to send message')
+        throw new Error(result.error || 'Failed to send message')
       }
 
-      setSubmitStatus('success')
+      setIsSuccess(true)
       reset()
-    } catch (error) {
-      setSubmitStatus('error')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  if (isSuccess) {
+    return (
+      <Reveal>
+        <div className="border border-border p-8 text-center">
+          <p className="technical-text mb-4">Transmission Received</p>
+          <p className="text-text text-body-lg mb-6">
+            Your message has been dispatched successfully. Expect a response within 24–48 hours.
+          </p>
+          <button
+            onClick={() => setIsSuccess(false)}
+            className="technical-text text-primary hover:text-primary-hover transition-colors duration-300"
+          >
+            Send Another Message
+          </button>
+        </div>
+      </Reveal>
+    )
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <label htmlFor="name" className="block text-sm font-medium text-text mb-2">
-          Name <span className="text-error">*</span>
-        </label>
-        <input
-          {...register('name')}
-          type="text"
-          id="name"
-          className={`input-field ${errors.name ? 'input-field-error' : ''}`}
-          placeholder="Your name"
-        />
-        {errors.name && <p className="text-error text-sm mt-1">{errors.name.message}</p>}
-      </motion.div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8" noValidate>
+      <Reveal>
+        <div>
+          <label htmlFor="name" className="technical-text mb-2 block">
+            Identification / Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            className="input-field"
+            placeholder="Your name"
+            {...register('name')}
+          />
+          {errors.name && <p className="technical-text text-error mt-2">{errors.name.message}</p>}
+        </div>
+      </Reveal>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-      >
-        <label htmlFor="email" className="block text-sm font-medium text-text mb-2">
-          Email <span className="text-error">*</span>
-        </label>
-        <input
-          {...register('email')}
-          type="email"
-          id="email"
-          className={`input-field ${errors.email ? 'input-field-error' : ''}`}
-          placeholder="your@email.com"
-        />
-        {errors.email && <p className="text-error text-sm mt-1">{errors.email.message}</p>}
-      </motion.div>
+      <Reveal delay={0.05}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label htmlFor="email" className="technical-text mb-2 block">
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              className="input-field"
+              placeholder="your@email.com"
+              {...register('email')}
+            />
+            {errors.email && (
+              <p className="technical-text text-error mt-2">{errors.email.message}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="subject" className="technical-text mb-2 block">
+              Subject
+            </label>
+            <input
+              id="subject"
+              type="text"
+              className="input-field"
+              placeholder="Project inquiry"
+              {...register('subject')}
+            />
+            {errors.subject && (
+              <p className="technical-text text-error mt-2">{errors.subject.message}</p>
+            )}
+          </div>
+        </div>
+      </Reveal>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <label htmlFor="subject" className="block text-sm font-medium text-text mb-2">
-          Subject
-        </label>
-        <input
-          {...register('subject')}
-          type="text"
-          id="subject"
-          className={`input-field ${errors.subject ? 'input-field-error' : ''}`}
-          placeholder="What's this about?"
-        />
-        {errors.subject && <p className="text-error text-sm mt-1">{errors.subject.message}</p>}
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25 }}
-      >
-        <label htmlFor="message" className="block text-sm font-medium text-text mb-2">
-          Message <span className="text-error">*</span>
-        </label>
-        <textarea
-          {...register('message')}
-          id="message"
-          rows={5}
-          className={`input-field resize-none ${errors.message ? 'input-field-error' : ''}`}
-          placeholder="Your message..."
-        />
-        {errors.message && <p className="text-error text-sm mt-1">{errors.message.message}</p>}
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <motion.button
-          type="submit"
-          disabled={isSubmitting}
-          className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-          whileHover={isSubmitting ? {} : { scale: 1.01 }}
-          whileTap={isSubmitting ? {} : { scale: 0.99 }}
-        >
-          {isSubmitting ? (
-            <span className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Sending...
-            </span>
-          ) : (
-            'Send Message'
+      <Reveal delay={0.1}>
+        <div>
+          <label htmlFor="message" className="technical-text mb-2 block">
+            Details / Message
+          </label>
+          <textarea
+            id="message"
+            rows={6}
+            className="input-field resize-none"
+            placeholder="Tell me about your project..."
+            {...register('message')}
+          />
+          {errors.message && (
+            <p className="technical-text text-error mt-2">{errors.message.message}</p>
           )}
-        </motion.button>
-      </motion.div>
+        </div>
+      </Reveal>
 
-      <AnimatePresence>
-        {submitStatus === 'success' && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="bg-success/10 border border-success/20 rounded-lg p-4"
+      <Reveal delay={0.15}>
+        <div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-primary w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <p className="text-success text-sm">
-              Message sent successfully! I&apos;ll get back to you soon.
-            </p>
-          </motion.div>
-        )}
+            {isSubmitting ? (
+              <span className="flex items-center gap-2 justify-center">
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Transmitting...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2 justify-center">
+                Transmit Data
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </span>
+            )}
+          </button>
 
-        {submitStatus === 'error' && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="bg-error/10 border border-error/20 rounded-lg p-4"
-          >
-            <p className="text-error text-sm">
-              Failed to send message. Please try again or email me directly.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Honeypot */}
-      <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
+          {error && <p className="technical-text text-error mt-4">{error}</p>}
+        </div>
+      </Reveal>
     </form>
   )
 }
