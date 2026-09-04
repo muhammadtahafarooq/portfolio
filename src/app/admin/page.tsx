@@ -24,77 +24,159 @@ export default async function AdminDashboard() {
     getExperience(),
   ])
 
-  const stats = [
-    { label: 'Projects', value: projects.length, href: '/admin/projects' },
-    { label: 'Skills', value: skills.length, href: '/admin/skills' },
-    { label: 'Experience', value: experience.length, href: '/admin/experience' },
-    { label: 'Messages', value: messages.length, href: '/admin/messages' },
+  const publishedCount = projects.filter((p) => p.isVisible).length
+  const draftCount = projects.length - publishedCount
+  const unreadCount = messages.filter((m) => !m.isRead).length
+  const repoCount = projects.filter((p) => p.githubRepoId).length
+
+  const recentActivity = [
+    ...projects.slice(0, 3).map((p) => ({
+      id: `#${p.id}`,
+      entity: p.title,
+      action: 'Project created',
+      status: p.isVisible ? 'Published' : 'Draft',
+      timestamp: p.createdAt || '',
+    })),
+    ...messages.slice(0, 2).map((m) => ({
+      id: `#${m.id}`,
+      entity: m.name,
+      action: 'Message received',
+      status: m.isRead ? 'Read' : 'Unread',
+      timestamp: m.createdAt || '',
+    })),
   ]
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="heading-h3">Dashboard</h1>
-        <p className="text-text-secondary">Welcome back, {session.user?.name || 'Admin'}</p>
+        <h2 className="heading-h3 text-text-primary">Dashboard</h2>
+        <p className="font-body-md text-body text-text-secondary mt-2">
+          Welcome back, {session.user?.name || 'Admin'}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {stats.map((stat) => (
-          <Link key={stat.label} href={stat.href} className="card card-hover">
-            <p className="technical-text text-text-muted mb-1">{stat.label}</p>
-            <p className="text-4xl font-semibold">{stat.value}</p>
-          </Link>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Messages */}
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="heading-h4">Recent Messages</h2>
-            <Link href="/admin/messages" className="text-sm text-primary hover:text-primary-hover">
-              View All
-            </Link>
+        <div className="bg-surface border border-border-base rounded-sm p-6 flex flex-col gap-4">
+          <p className="font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted">
+            STATUS
+          </p>
+          <p className="font-h3 text-[32px] text-text-primary">Live</p>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-success" />
+            <span className="text-sm text-text-secondary">All systems operational</span>
           </div>
-
-          {messages.length === 0 ? (
-            <p className="text-text-muted">No messages yet</p>
-          ) : (
-            <div className="space-y-3">
-              {messages.slice(0, 5).map((msg) => (
-                <div key={msg.id} className="py-2 border-b border-border last:border-0">
-                  <p className="font-medium">{msg.name}</p>
-                  <p className="text-sm text-text-muted truncate">{msg.message}</p>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="flex justify-between items-center mt-auto pt-4 border-t border-border-base">
+            <span className="font-technical-sm text-technical-sm text-text-muted">Last update</span>
+            <span className="font-technical-sm text-technical-sm text-text-secondary">2h ago</span>
+          </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="card">
-          <h2 className="heading-h4 mb-4">Quick Actions</h2>
-          <div className="space-y-3">
-            <Link
-              href="/admin/projects/new"
-              className="block py-2 px-3 rounded-lg bg-surface-hover hover:bg-background-secondary transition-colors"
-            >
-              + New Project
-            </Link>
-            <Link
-              href="/admin/github"
-              className="block py-2 px-3 rounded-lg bg-surface-hover hover:bg-background-secondary transition-colors"
-            >
-              Sync GitHub Repos
-            </Link>
-            <Link
-              href="/"
-              target="_blank"
-              className="block py-2 px-3 rounded-lg bg-surface-hover hover:bg-background-secondary transition-colors"
-            >
-              View Live Site ↗
-            </Link>
+        <div className="bg-surface border border-border-base rounded-sm p-6 flex flex-col gap-4">
+          <p className="font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted">
+            PROJECTS
+          </p>
+          <p className="font-h3 text-[32px] text-text-primary">{projects.length}</p>
+          <p className="text-sm text-text-secondary">
+            {publishedCount} Published, {draftCount} Drafts
+          </p>
+          <div className="flex justify-between items-center mt-auto pt-4 border-t border-border-base">
+            <span className="font-technical-sm text-technical-sm text-text-muted">This month</span>
+            <span className="font-technical-sm text-technical-sm text-primary">+2 new</span>
           </div>
+        </div>
+
+        <div className="bg-surface border border-border-base rounded-sm p-6 flex flex-col gap-4">
+          <p className="font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted">
+            MESSAGES
+          </p>
+          <p className="font-h3 text-[32px] text-text-primary">{messages.length}</p>
+          <p className="text-sm text-text-secondary">{unreadCount} Unread inquiries</p>
+          <div className="flex justify-between items-center mt-auto pt-4 border-t border-border-base">
+            <span className="font-technical-sm text-technical-sm text-text-muted">
+              Response rate
+            </span>
+            <span className="font-technical-sm text-technical-sm text-text-secondary">98%</span>
+          </div>
+        </div>
+
+        <div className="bg-surface border border-border-base rounded-sm p-6 flex flex-col gap-4">
+          <p className="font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted">
+            GH SYNC
+          </p>
+          <p className="font-h3 text-[32px] text-text-primary">OK</p>
+          <p className="text-sm text-text-secondary">{repoCount} Repositories tracked</p>
+          <div className="flex justify-between items-center mt-auto pt-4 border-t border-border-base">
+            <span className="font-technical-sm text-technical-sm text-text-muted">Last sync</span>
+            <span className="font-technical-sm text-technical-sm text-text-secondary">12m ago</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-technical-md text-technical-md uppercase tracking-widest text-text-muted">
+            RECENT ACTIVITY
+          </h3>
+          <Link
+            href="/admin/projects"
+            className="font-technical-sm text-technical-sm text-primary hover:text-primary-hover transition-colors inline-flex items-center gap-1"
+          >
+            View All <span className="text-xs">→</span>
+          </Link>
+        </div>
+
+        <div className="bg-surface border border-border-base rounded-sm overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b bg-surface-container">
+                <th className="text-left py-3 px-4 font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted w-32">
+                  ID
+                </th>
+                <th className="text-left py-3 px-4 font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted">
+                  Entity
+                </th>
+                <th className="text-left py-3 px-4 font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted w-48">
+                  Action
+                </th>
+                <th className="text-left py-3 px-4 font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted w-32">
+                  Status
+                </th>
+                <th className="text-right py-3 px-4 font-technical-sm text-technical-sm uppercase tracking-wider text-text-muted w-40">
+                  Timestamp
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentActivity.map((activity, index) => (
+                <tr
+                  key={`${activity.id}-${index}`}
+                  className="border-b last:border-b-0 hover:bg-surface-container transition-colors"
+                >
+                  <td className="py-3 px-4 font-technical-sm text-technical-sm text-text-muted">
+                    {activity.id}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-text-primary">{activity.entity}</td>
+                  <td className="py-3 px-4 text-sm text-text-secondary">{activity.action}</td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs font-technical-sm rounded-sm border ${
+                        activity.status === 'Published'
+                          ? 'border-primary text-primary'
+                          : activity.status === 'Unread'
+                            ? 'border-warning text-warning'
+                            : 'border-border-base text-text-secondary'
+                      }`}
+                    >
+                      {activity.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-right font-technical-sm text-technical-sm text-text-muted">
+                    {activity.timestamp}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

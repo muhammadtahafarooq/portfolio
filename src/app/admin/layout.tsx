@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
-import Link from 'next/link'
+import { Sidebar } from '@/components/admin/sidebar'
 
 export const metadata = {
   title: {
@@ -15,70 +15,41 @@ export const metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions)
 
-  // Allow access to login page without auth
-  // Login page will handle its own redirects
+  const url = new URL(process.env.NEXTAUTH_URL || 'http://localhost:3000')
+  const isLoginPage = false
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-bg-primary text-text-primary antialiased font-body-md">
+        {children}
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {session && (
-        <aside className="w-64 bg-surface border-r border-border p-6">
-          <div className="mb-8">
-            <Link href="/admin" className="text-lg font-semibold">
-              Admin
-            </Link>
+    <div className="min-h-screen bg-bg-primary text-text-primary antialiased font-body-md overflow-hidden">
+      <Sidebar />
+      <main className="ml-64 h-screen flex flex-col bg-bg-primary overflow-hidden relative">
+        <header className="h-16 border-b border-border-base bg-surface flex justify-between items-center px-gutter shrink-0 relative z-40">
+          <div className="flex items-center gap-4">
+            <span className="font-technical-md text-technical-md text-text-muted">/</span>
+            <span className="font-technical-md text-technical-md font-bold text-text-primary">
+              {session.user?.name || 'Admin'}
+            </span>
           </div>
-
-          <nav className="space-y-2">
-            <Link
-              href="/admin"
-              className="block py-2 px-3 rounded-lg text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/projects"
-              className="block py-2 px-3 rounded-lg text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
-            >
-              Projects
-            </Link>
-            <Link
-              href="/admin/skills"
-              className="block py-2 px-3 rounded-lg text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
-            >
-              Skills
-            </Link>
-            <Link
-              href="/admin/experience"
-              className="block py-2 px-3 rounded-lg text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
-            >
-              Experience
-            </Link>
-            <Link
-              href="/admin/messages"
-              className="block py-2 px-3 rounded-lg text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
-            >
-              Messages
-            </Link>
-            <Link
-              href="/admin/settings"
-              className="block py-2 px-3 rounded-lg text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
-            >
-              Settings
-            </Link>
-          </nav>
-
-          <div className="mt-auto pt-8">
-            <Link
-              href="/"
-              className="block py-2 px-3 rounded-lg text-text-muted hover:text-text transition-colors text-sm"
-            >
-              ← Back to Site
-            </Link>
+          <div className="flex items-center gap-3">
+            <div className="w-px h-6 bg-border-base" />
+            <span className="font-technical-sm text-technical-sm text-text-muted">
+              {session.user?.email}
+            </span>
           </div>
-        </aside>
-      )}
-
-      <main className="flex-1 p-8">{children}</main>
+        </header>
+        <div className="flex-1 overflow-y-auto px-margin-desktop py-12 scroll-smooth">
+          <div className="max-w-container-max mx-auto flex flex-col gap-section-v-space-sm">
+            {children}
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
