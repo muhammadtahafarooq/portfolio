@@ -143,11 +143,11 @@
   .input-field {
     @apply w-full bg-background-secondary border border-border rounded-lg px-4 py-3 text-body text-text
            placeholder:text-text-muted transition-all duration-[150ms] ease-[var(--ease-standard)]
-           focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/12;
+           focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/10;
   }
 
   .input-field-error {
-    @apply border-error focus:border-error focus:ring-error/12;
+    @apply border-error focus:border-error focus:ring-[3px] focus:ring-error/10;
   }
 
   /* Gradients */

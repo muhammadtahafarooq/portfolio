@@ -1,6 +1,12 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY environment variable is not set')
+  }
+  return new Resend(apiKey)
+}
 
 interface SendContactEmailProps {
   name: string
@@ -17,6 +23,7 @@ export async function sendContactEmail({ name, email, subject, message }: SendCo
   }
 
   try {
+    const resend = getResend()
     await resend.emails.send({
       from: 'Portfolio <onboarding@resend.dev>',
       to: contactEmail,
