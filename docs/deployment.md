@@ -45,8 +45,8 @@ In Cloudflare dashboard → Workers & Pages → your project → **Settings** �
 | `TURSO_AUTH_TOKEN` | `your-turso-auth-token` | From Turso dashboard |
 | `NEXTAUTH_SECRET` | `your-random-secret-32-chars` | Generate with `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | `https://your-project.pages.dev` | Your live URL |
-| `ADMIN_EMAIL` | `muhammadtahafarooq22@gmail.com` | Admin login email |
-| `ADMIN_PASSWORD` | `$2a$12$noX.KcDh/X302gD3PxgfXeGYWf/ef6B8tRimrM9HOR69TImtsHWdu` | Pre-hashed bcrypt |
+| `ADMIN_EMAIL` | `your-email@gmail.com` | Admin login email |
+| `ADMIN_PASSWORD` | (leave empty — set via seed script or admin panel) | Hashed with bcrypt |
 | `RESEND_API_KEY` | `re_your_resend_api_key` | From resend.com |
 | `CONTACT_EMAIL` | `muhammadtahafarooq22@gmail.com` | Where contact emails go |
 | `CLOUDFLARE_ACCOUNT_ID` | `your_cloudflare_account_id` | From R2 dashboard |

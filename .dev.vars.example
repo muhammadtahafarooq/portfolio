@@ -9,8 +9,8 @@ TURSO_AUTH_TOKEN=
 # Authentication
 NEXTAUTH_SECRET=your-production-secret-here
 NEXTAUTH_URL=http://localhost:8788
-ADMIN_EMAIL=muhammadtahafarooq22@gmail.com
-ADMIN_PASSWORD=$2a$12$noX.KcDh/X302gD3PxgfXeGYWf/ef6B8tRimrM9HOR69TImtsHWdu
+ADMIN_EMAIL=your-email@gmail.com
+ADMIN_PASSWORD=
 
 # Email (Resend)
 RESEND_API_KEY=
