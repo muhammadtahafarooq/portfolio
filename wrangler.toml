@@ -9,4 +9,4 @@ services = [
   { binding = "WORKER_SELF_REFERENCE", service = "taha-portfolio" },
 ]
 
-# Environment variables are set in the Cloudflare dashboard, not here.
+# Environment variables are configured in the Cloudflare dashboard.
