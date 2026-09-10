@@ -47,7 +47,9 @@ In Cloudflare dashboard → Workers & Pages → your project → **Settings** �
 | `NEXTAUTH_URL` | `https://your-project.pages.dev` | Your live URL |
 | `ADMIN_EMAIL` | `your-email@gmail.com` | Admin login email |
 | `ADMIN_PASSWORD` | (leave empty — set via seed script or admin panel) | Hashed with bcrypt |
-| `RESEND_API_KEY` | `re_your_resend_api_key` | From resend.com |
+| `BREVO_API_KEY` | `your-brevo-api-key` | From Brevo dashboard → SMTP & API |
+| `BREVO_SENDER_EMAIL` | `your-verified@email.com` | Must be verified in Brevo |
+| `BREVO_SENDER_NAME` | `Muhammad Taha` | Sender display name |
 | `CONTACT_EMAIL` | `muhammadtahafarooq22@gmail.com` | Where contact emails go |
 | `CLOUDFLARE_ACCOUNT_ID` | `your_cloudflare_account_id` | From R2 dashboard |
 | `R2_ACCESS_KEY_ID` | `your_r2_access_key` | From R2 → Manage R2 API Tokens |
@@ -68,10 +70,12 @@ In Cloudflare dashboard → Workers & Pages → your project → **Settings** �
 5. `turso db tokens create taha-portfolio` → gives `TURSO_AUTH_TOKEN`
 6. Push schema: `turso db shell taha-portfolio < schema.sql`
 
-**Resend API Key:**
-1. Go to [resend.com](https://resend.com) → Sign up (free)
-2. Create API key
-3. Verify your domain (or use `onboarding@resend.dev` for testing)
+**Brevo Email:**
+1. Go to [brevo.com](https://brevo.com) → Sign up (free)
+2. Go to **SMTP & API** → **API Keys** → Generate
+3. Verify your sender email in **Senders** tab
+4. Copy the API key
+3. Verify your sender email in **Senders** tab (required before sending)
 
 **Cloudflare R2:**
 1. Cloudflare dashboard → **R2** → **Create bucket**
@@ -170,7 +174,7 @@ npm run pages:dev
 | Hosting | Cloudflare Pages | Unlimited requests |
 | Database | Turso (libSQL) | 9GB storage, 1B reads/mo |
 | Storage | Cloudflare R2 | 10GB storage, 10M reads/mo |
-| Email | Resend | 100 emails/day, 3K/mo |
+| Email | Brevo | 300 emails/day |
 | Auth | NextAuth.js (JWT) | N/A (self-hosted) |
 | CDN | Cloudflare | Unlimited |
 

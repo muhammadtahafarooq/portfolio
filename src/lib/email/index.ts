@@ -1,23 +1,21 @@
-import { Resend } from 'resend'
-
 const SITE_NAME = 'Muhammad Taha Portfolio'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 const REPLY_TO = 'muhammadtahafarooq22@gmail.com'
 
-function getResend(): Resend | null {
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) {
-    return null
-  }
-  return new Resend(apiKey)
+function getApiKey(): string | null {
+  return process.env.BREVO_API_KEY || null
 }
 
 function isDevMode(): boolean {
-  return !process.env.RESEND_API_KEY || process.env.EMAIL_DEV_MODE === 'true'
+  return !process.env.BREVO_API_KEY || process.env.EMAIL_DEV_MODE === 'true'
 }
 
 function getFromAddress(): string {
-  return 'Muhammad Taha <onboarding@resend.dev>'
+  return process.env.BREVO_SENDER_EMAIL || REPLY_TO
+}
+
+function getFromName(): string {
+  return process.env.BREVO_SENDER_NAME || SITE_NAME
 }
 
 function getContactEmail(): string {
@@ -74,13 +72,21 @@ export interface EmailResult {
 }
 
 // ---------------------------------------------------------------------------
-// Core send function with dev mode
+// Core send function via Brevo REST API
 // ---------------------------------------------------------------------------
+
+interface BrevoPayload {
+  sender: { name: string; email: string }
+  to: { email: string; name?: string }[]
+  subject: string
+  htmlContent: string
+  replyTo?: { email: string; name?: string }
+}
 
 async function send(to: string, subject: string, html: string): Promise<EmailResult> {
   if (isDevMode()) {
     console.log('\n📧 [DEV EMAIL] Would send email:')
-    console.log(`   From: ${getFromAddress()}`)
+    console.log(`   From: ${getFromName()} <${getFromAddress()}>`)
     console.log(`   Reply-To: ${REPLY_TO}`)
     console.log(`   To: ${to}`)
     console.log(`   Subject: ${subject}`)
@@ -89,24 +95,39 @@ async function send(to: string, subject: string, html: string): Promise<EmailRes
     return { success: true, devMode: true }
   }
 
-  const resend = getResend()
-  if (!resend) {
-    console.error('Email disabled: RESEND_API_KEY not set')
+  const apiKey = getApiKey()
+  if (!apiKey) {
+    console.error('Email disabled: BREVO_API_KEY not set')
     return { success: false, error: 'Email service not configured' }
   }
 
+  const payload: BrevoPayload = {
+    sender: { name: getFromName(), email: getFromAddress() },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html,
+    replyTo: { email: REPLY_TO, name: getFromName() },
+  }
+
   try {
-    const { error } = await resend.emails.send({
-      from: getFromAddress(),
-      to,
-      subject,
-      html,
-      reply_to: REPLY_TO,
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': apiKey,
+        accept: 'application/json',
+      },
+      body: JSON.stringify(payload),
     })
 
-    if (error) {
-      console.error('Resend error:', error)
-      return { success: false, error: error.message || 'Email delivery failed' }
+    const data = await response.json()
+
+    if (!response.ok) {
+      console.error('Brevo API error:', response.status, data)
+      return {
+        success: false,
+        error: data.message || `Email delivery failed (${response.status})`,
+      }
     }
 
     return { success: true }

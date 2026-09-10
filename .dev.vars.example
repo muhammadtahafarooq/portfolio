@@ -12,8 +12,10 @@ NEXTAUTH_URL=http://localhost:8788
 ADMIN_EMAIL=your-email@gmail.com
 ADMIN_PASSWORD=
 
-# Email (Resend)
-RESEND_API_KEY=
+# Email (Brevo)
+BREVO_API_KEY=
+BREVO_SENDER_EMAIL=your-verified@email.com
+BREVO_SENDER_NAME=Muhammad Taha
 CONTACT_EMAIL=
 
 # Storage (Cloudflare R2)
