@@ -18,9 +18,6 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
-    "pages:build": "npx @cloudflare/next-on-pages",
-    "pages:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",
-    "pages:deploy": "npx wrangler pages deploy .vercel/output/static",
     "prepare": "husky"
   },
   "dependencies": {
@@ -46,16 +43,11 @@
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-hook-form": "^7.52.0",
-    "resend": "^3.4.0",
     "tailwind-merge": "^2.4.0",
     "three": "^0.166.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "1.13.0",
-    "@cloudflare/workers-types": "^4.20240208.0",
-    "vercel": "^39.0.0",
-    "wrangler": "^3.28.2",
     "@testing-library/jest-dom": "^6.4.0",
     "@testing-library/react": "^15.0.0",
     "@types/bcryptjs": "^2.4.6",
