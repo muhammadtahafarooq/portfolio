@@ -17,10 +17,14 @@ import { Reveal } from '@/components/motion'
 import { SpaceBackground } from '@/components/public/space-background'
 
 export async function generateStaticParams() {
-  const projects = await getProjects()
-  return projects.map((project) => ({
-    slug: project.slug,
-  }))
+  try {
+    const projects = await getProjects()
+    return projects.map((project) => ({
+      slug: project.slug,
+    }))
+  } catch {
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {

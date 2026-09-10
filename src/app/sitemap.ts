@@ -4,7 +4,12 @@ import { getProjects } from '@/lib/db/queries'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://muhammadtaha.dev'
 
-  const projects = await getProjects()
+  let projects: Awaited<ReturnType<typeof getProjects>> = []
+  try {
+    projects = await getProjects()
+  } catch {
+    // Database not available during build
+  }
   const projectUrls = projects
     .filter((p) => p.isVisible && p.slug)
     .map((project) => ({
