@@ -1,53 +1,66 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
+import { eq } from 'drizzle-orm'
 import { contactFormSchema } from '@/lib/validators'
-import { sendContactEmail } from '@/lib/email'
+import { sendContactAdminEmail, sendContactAcknowledgment, sendWelcomeEmail } from '@/lib/email'
+import { db, schema } from '@/lib/db'
+import { apiError, apiSuccess } from '@/lib/api-helpers'
 
 const rateLimit = new Map<string, number>()
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutes
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
 
-    // Honeypot check
     if (body.website) {
-      return NextResponse.json({ success: true })
+      return apiSuccess({ success: true })
     }
 
-    // Rate limiting
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     const lastSubmit = rateLimit.get(ip)
     if (lastSubmit && Date.now() - lastSubmit < RATE_LIMIT_WINDOW) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      )
+      return apiError('Too many requests. Please try again later.', 429)
     }
 
-    // Validate input
     const result = contactFormSchema.safeParse(body)
     if (!result.success) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: result.error.flatten() },
-        { status: 400 }
-      )
+      return apiError('Invalid input', 400)
     }
 
     const { name, email, subject, message } = result.data
 
-    // Send email
-    const emailResult = await sendContactEmail({ name, email, subject, message })
-    if (!emailResult.success) {
-      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
-    }
+    await db.insert(schema.contactMessages).values({
+      name,
+      email,
+      subject,
+      message,
+    })
 
-    // Update rate limit
+    const unreadResult = await db
+      .select()
+      .from(schema.contactMessages)
+      .where(eq(schema.contactMessages.isRead, false))
+
+    const emailResults = await Promise.allSettled([
+      sendContactAdminEmail({ name, email, subject, message }),
+      sendContactAcknowledgment({ name, email }),
+      sendWelcomeEmail({ name, email }),
+    ])
+
+    emailResults.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        console.error(`Email ${i} failed:`, result.reason)
+      } else if (result.value.devMode) {
+        console.log(`Email ${i}: dev mode (not sent)`)
+      } else if (!result.value.success) {
+        console.error(`Email ${i} failed:`, result.value.error)
+      }
+    })
+
     rateLimit.set(ip, Date.now())
 
-    return NextResponse.json({ success: true })
+    return apiSuccess({ success: true })
   } catch (error) {
     console.error('Contact form error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return apiError('Internal server error', 500)
   }
 }

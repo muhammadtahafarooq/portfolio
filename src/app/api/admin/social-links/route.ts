@@ -1,42 +1,35 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
+import { socialLinkSchema } from '@/lib/validators'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  const { session, error } = await requireAuth()
+  if (error) return error
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const links = await db.select().from(schema.socialLinks)
+    return apiSuccess(links)
+  } catch (error) {
+    return apiError('Failed to fetch social links')
   }
-
-  const links = await db.select().from(schema.socialLinks)
-  return NextResponse.json(links)
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   try {
     const body = await request.json()
+    const parsed = socialLinkSchema.safeParse(body)
 
-    const result = await db
-      .insert(schema.socialLinks)
-      .values({
-        platform: body.platform,
-        url: body.url,
-        isVisible: body.isVisible !== false,
-        sortOrder: body.sortOrder || 0,
-      } as typeof schema.socialLinks.$inferInsert)
-      .returning()
+    if (!parsed.success) {
+      return apiError('Validation failed', 400)
+    }
 
-    return NextResponse.json(result[0])
+    const result = await db.insert(schema.socialLinks).values(parsed.data).returning()
+
+    return apiSuccess(result[0], 201)
   } catch (error) {
-    console.error('Create social link error:', error)
-    return NextResponse.json({ error: 'Failed to create social link' }, { status: 500 })
+    return apiError('Failed to create social link')
   }
 }

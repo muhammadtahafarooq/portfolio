@@ -2,10 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/admin/toast'
+import { PageHeader } from '@/components/admin/page-header'
 
 export default function NewProject() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const { toast } = useToast()
   const [form, setForm] = useState({
     title: '',
     slug: '',
@@ -44,10 +47,13 @@ export default function NewProject() {
       })
 
       if (res.ok) {
+        toast('Project created', 'success')
         router.push('/admin/projects')
+      } else {
+        toast('Failed to create project', 'error')
       }
-    } catch (error) {
-      console.error('Failed to create project:', error)
+    } catch {
+      toast('Failed to create project', 'error')
     } finally {
       setSaving(false)
     }
@@ -55,149 +61,188 @@ export default function NewProject() {
 
   return (
     <div>
-      <h1 className="heading-h3 mb-8">New Project</h1>
+      <PageHeader
+        title="New Project"
+        description="Create a new project entry"
+        action={
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              form="project-form"
+              disabled={saving}
+              className="bg-primary text-background font-mono text-xs uppercase tracking-widest px-6 py-2 rounded-sm hover:bg-primary-hover transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Create Project'}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="border border-border-base text-text-secondary font-mono text-xs uppercase tracking-widest px-6 py-2 rounded-sm hover:text-text-primary hover:border-border-hover transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        }
+      />
 
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+      <form
+        id="project-form"
+        onSubmit={handleSubmit}
+        className="bg-surface border border-border-base p-8 max-w-2xl space-y-6"
+      >
         <div>
-          <label className="block text-sm mb-2">Title *</label>
+          <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+            Title *
+          </label>
           <input
             type="text"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="input-field"
+            className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-2">Slug *</label>
+          <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+            Slug *
+          </label>
           <input
             type="text"
             value={form.slug}
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
-            className="input-field"
+            className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
             placeholder="my-project"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-2">Short Statement</label>
+          <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+            Short Statement
+          </label>
           <input
             type="text"
             value={form.shortStatement}
             onChange={(e) => setForm({ ...form, shortStatement: e.target.value })}
-            className="input-field"
+            className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-2">Description</label>
+          <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+            Description
+          </label>
           <textarea
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="input-field min-h-[120px]"
+            className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors min-h-[120px]"
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-2">Technologies (comma-separated)</label>
+          <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+            Technologies (comma-separated)
+          </label>
           <input
             type="text"
             value={form.technologies}
             onChange={(e) => setForm({ ...form, technologies: e.target.value })}
-            className="input-field"
+            className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
             placeholder="React, Next.js, TypeScript"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm mb-2">Live URL</label>
+            <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+              Live URL
+            </label>
             <input
               type="url"
               value={form.liveUrl}
               onChange={(e) => setForm({ ...form, liveUrl: e.target.value })}
-              className="input-field"
+              className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
             />
           </div>
           <div>
-            <label className="block text-sm mb-2">GitHub URL</label>
+            <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+              GitHub URL
+            </label>
             <input
               type="url"
               value={form.githubUrl}
               onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
-              className="input-field"
+              className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm mb-2">Screenshot URLs (comma-separated)</label>
+          <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+            Screenshot URLs (comma-separated)
+          </label>
           <input
             type="text"
             value={form.screenshotUrls}
             onChange={(e) => setForm({ ...form, screenshotUrls: e.target.value })}
-            className="input-field"
+            className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
           />
         </div>
 
-        <div className="space-y-4">
-          <h3 className="heading-h4">Case Study</h3>
+        <div className="border-t border-border-base pt-6 space-y-4">
+          <h3 className="text-sm font-medium text-text-primary">Case Study</h3>
           <div>
-            <label className="block text-sm mb-2">Problem</label>
+            <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+              Problem
+            </label>
             <textarea
               value={form.caseStudyProblem}
               onChange={(e) => setForm({ ...form, caseStudyProblem: e.target.value })}
-              className="input-field min-h-[80px]"
+              className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors min-h-[80px]"
             />
           </div>
           <div>
-            <label className="block text-sm mb-2">Solution</label>
+            <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+              Solution
+            </label>
             <textarea
               value={form.caseStudySolution}
               onChange={(e) => setForm({ ...form, caseStudySolution: e.target.value })}
-              className="input-field min-h-[80px]"
+              className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors min-h-[80px]"
             />
           </div>
           <div>
-            <label className="block text-sm mb-2">Result</label>
+            <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
+              Result
+            </label>
             <textarea
               value={form.caseStudyResult}
               onChange={(e) => setForm({ ...form, caseStudyResult: e.target.value })}
-              className="input-field min-h-[80px]"
+              className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors min-h-[80px]"
             />
           </div>
         </div>
 
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2">
+        <div className="border-t border-border-base pt-6 flex gap-6">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={form.isFeatured}
               onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
-              className="rounded"
+              className="accent-primary w-4 h-4"
             />
-            <span className="text-sm">Featured</span>
+            <span className="text-sm text-text-secondary">Featured</span>
           </label>
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={form.isVisible}
               onChange={(e) => setForm({ ...form, isVisible: e.target.checked })}
-              className="rounded"
+              className="accent-primary w-4 h-4"
             />
-            <span className="text-sm">Visible</span>
+            <span className="text-sm text-text-secondary">Visible</span>
           </label>
-        </div>
-
-        <div className="flex gap-4">
-          <button type="submit" disabled={saving} className="btn-primary disabled:opacity-50">
-            {saving ? 'Saving...' : 'Create Project'}
-          </button>
-          <button type="button" onClick={() => router.back()} className="btn-secondary">
-            Cancel
-          </button>
         </div>
       </form>
     </div>

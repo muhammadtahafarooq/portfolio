@@ -25,9 +25,16 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.dev.vars
+local.db
 
 # vercel
 .vercel
+
+# cloudflare
+.wrangler
+.dev.vars
+.vercel/output
 
 # typescript
 *.tsbuildinfo
@@ -42,3 +49,17 @@ drizzle/meta/
 
 # OS
 Thumbs.db
+
+# temp files
+_test_resume.js
+_tmp_hash.js
+_update_about.js
+_update_admin.js
+admin-test.js
+resume-test.js
+test.js
+start-dev.bat
+dev-output.log
+dev-output.txt
+dev.log
+design/

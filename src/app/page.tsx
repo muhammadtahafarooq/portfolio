@@ -17,8 +17,21 @@ import { LiquidText } from '@/components/motion/liquid-text'
 import { TiltCard } from '@/components/motion/tilt-card'
 import { HomeNavbar } from '@/components/public/home-navbar'
 import { ContactSection } from '@/components/public/contact-section'
-import { StarField } from '@/components/3d/star-field'
-import type { Skill, Technology } from '@/types'
+import { SpaceBackground } from '@/components/public/space-background'
+import { HeroMilkyWay } from '@/components/3d/hero-milky-way'
+import type { Skill } from '@/types'
+
+function mergeDedup(a: { name: string }[], b: { name: string }[]) {
+  const seen = new Set(a.map((i) => i.name))
+  const merged = [...a]
+  for (const item of b) {
+    if (!seen.has(item.name)) {
+      merged.push(item)
+      seen.add(item.name)
+    }
+  }
+  return merged
+}
 
 function groupByCategory<T extends { category: string | null }>(items: T[]): Map<string, T[]> {
   const grouped = new Map<string, T[]>()
@@ -47,36 +60,34 @@ export default async function HomePage() {
   const techGroups = groupByCategory(technologies)
 
   const skillCategories = [
-    { label: 'Web Technologies', items: techGroups.get('Web Technologies') || [] },
+    { label: 'WEB', items: mergeDedup(skillGroups.get('WEB') || [], techGroups.get('WEB') || []) },
     {
-      label: 'Frontend',
-      items: [...(skillGroups.get('Frontend') || []), ...(techGroups.get('Frontend') || [])],
+      label: 'BACKEND',
+      items: mergeDedup(skillGroups.get('BACKEND') || [], techGroups.get('BACKEND') || []),
     },
     {
-      label: 'Backend',
-      items: [...(skillGroups.get('Backend') || []), ...(techGroups.get('Backend') || [])],
+      label: 'DATABASE',
+      items: mergeDedup(skillGroups.get('DATABASE') || [], techGroups.get('DATABASE') || []),
     },
     {
-      label: 'Databases',
-      items: [...(skillGroups.get('Databases') || []), ...(techGroups.get('Databases') || [])],
+      label: 'TOOLS',
+      items: mergeDedup(skillGroups.get('TOOLS') || [], techGroups.get('TOOLS') || []),
     },
-    {
-      label: 'DevOps',
-      items: [...(skillGroups.get('DevOps') || []), ...(techGroups.get('DevOps') || [])],
-    },
-    { label: 'AI', items: [...(skillGroups.get('AI') || []), ...(techGroups.get('AI') || [])] },
+    { label: 'AI', items: mergeDedup(skillGroups.get('AI') || [], techGroups.get('AI') || []) },
   ].filter((cat) => cat.items.length > 0)
 
   const bioParagraphs = about?.biography ? about.biography.split('\n\n').filter(Boolean) : []
 
   return (
     <main className="min-h-screen">
+      <SpaceBackground />
       <HomeNavbar />
 
       <section className="relative min-h-screen flex items-center overflow-hidden">
+        <HeroMilkyWay />
         <div className="container-main relative z-10 pt-20">
           <div className="grid-12 items-center min-h-[80vh]">
-            <div className="col-span-12 md:col-span-7">
+            <div className="col-span-12 md:col-span-8">
               <Reveal delay={0.1}>
                 <p className="section-label">Portfolio / 2026</p>
               </Reveal>
@@ -107,37 +118,34 @@ export default async function HomePage() {
             </div>
 
             <Reveal
-              className="col-span-12 md:col-span-4 md:col-start-9"
+              className="col-span-12 md:col-span-3 md:col-start-10"
               delay={0.3}
               direction="right"
             >
               <TiltCard>
-                <div className="relative aspect-[3/4] border border-border bg-surface">
+                <div className="relative aspect-[3/4] border border-border bg-surface max-w-[240px] mx-auto overflow-hidden">
                   {profile?.avatarUrl ? (
                     <Image
                       src={profile.avatarUrl}
                       alt={profile.name}
                       fill
+                      sizes="240px"
                       className="object-cover"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-6xl font-bold text-primary/20">
-                        {(profile?.name || 'MT')
-                          .split(' ')
-                          .map((n) => n[0])
-                          .join('')}
-                      </span>
-                    </div>
+                    <Image
+                      src="/images/homepage pic.jpeg"
+                      alt="Muhammad Taha"
+                      fill
+                      sizes="240px"
+                      className="object-cover object-top"
+                    />
                   )}
-                  <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-primary" />
-                  <div className="absolute -top-2 -right-2 w-8 h-8 border-t-2 border-r-2 border-primary" />
-                  <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-2 border-l-2 border-primary" />
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-primary" />
-                  <div className="absolute top-1/2 -left-4 w-8 h-px bg-primary/30" />
-                  <div className="absolute top-1/2 -right-4 w-8 h-px bg-primary/30" />
-                  <div className="absolute -top-4 left-1/2 w-px h-8 bg-primary/30" />
-                  <div className="absolute -bottom-4 left-1/2 w-px h-8 bg-primary/30" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-primary" />
+                  <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-primary" />
+                  <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-2 border-l-2 border-primary" />
+                  <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-2 border-r-2 border-primary" />
                 </div>
               </TiltCard>
             </Reveal>
@@ -216,7 +224,7 @@ export default async function HomePage() {
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {category.items.map((item) => (
-                        <span key={item.id} className="tech-tag">
+                        <span key={item.name} className="tech-tag">
                           {item.name}
                         </span>
                       ))}
@@ -256,13 +264,14 @@ export default async function HomePage() {
                       <div
                         className={`col-span-12 md:col-span-7 ${isReversed ? 'md:order-2' : ''}`}
                       >
-                        <div className="aspect-video bg-surface border border-border overflow-hidden relative">
+                        <div className="aspect-video bg-background border border-border overflow-hidden relative">
                           {project.screenshotUrls ? (
                             <Image
                               src={JSON.parse(project.screenshotUrls)[0]}
                               alt={project.title}
                               fill
-                              className="object-cover"
+                              sizes="(max-width: 768px) 100vw, 60vw"
+                              className="object-contain p-4"
                             />
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center text-text-muted">
@@ -347,10 +356,20 @@ export default async function HomePage() {
                         )}
                       </div>
                       <div className="col-span-12 md:col-span-3">
-                        <span className="tech-tag">Experience</span>
+                        <Link
+                          href="/experience"
+                          className="tech-tag hover:text-primary hover:border-primary transition-colors"
+                        >
+                          Experience
+                        </Link>
                       </div>
                       <div className="col-span-12 md:col-span-1 text-right hidden md:block">
-                        <span className="text-primary">&rarr;</span>
+                        <Link
+                          href="/experience"
+                          className="text-primary hover:text-primary/80 transform hover:translate-x-1 transition-all"
+                        >
+                          &rarr;
+                        </Link>
                       </div>
                     </div>
                   </StaggerItem>
@@ -378,10 +397,20 @@ export default async function HomePage() {
                         )}
                       </div>
                       <div className="col-span-12 md:col-span-3">
-                        <span className="tech-tag">Education</span>
+                        <Link
+                          href="/resume"
+                          className="tech-tag hover:text-primary hover:border-primary transition-colors"
+                        >
+                          Education
+                        </Link>
                       </div>
                       <div className="col-span-12 md:col-span-1 text-right hidden md:block">
-                        <span className="text-primary">&rarr;</span>
+                        <Link
+                          href="/resume"
+                          className="text-primary hover:text-primary/80 transform hover:translate-x-1 transition-all"
+                        >
+                          &rarr;
+                        </Link>
                       </div>
                     </div>
                   </StaggerItem>
@@ -406,10 +435,20 @@ export default async function HomePage() {
                         )}
                       </div>
                       <div className="col-span-12 md:col-span-3">
-                        <span className="tech-tag">Certification</span>
+                        <Link
+                          href="/certifications"
+                          className="tech-tag hover:text-primary hover:border-primary transition-colors"
+                        >
+                          Certification
+                        </Link>
                       </div>
                       <div className="col-span-12 md:col-span-1 text-right hidden md:block">
-                        <span className="text-primary">&rarr;</span>
+                        <Link
+                          href="/certifications"
+                          className="text-primary hover:text-primary/80 transform hover:translate-x-1 transition-all"
+                        >
+                          &rarr;
+                        </Link>
                       </div>
                     </div>
                   </StaggerItem>
@@ -459,6 +498,8 @@ export default async function HomePage() {
                   { label: 'About', href: '/about' },
                   { label: 'Projects', href: '/projects' },
                   { label: 'Experience', href: '/experience' },
+                  { label: 'Education', href: '/education' },
+                  { label: 'Certifications', href: '/certifications' },
                   { label: 'Resume', href: '/resume' },
                 ].map((item) => (
                   <Link
@@ -478,7 +519,7 @@ export default async function HomePage() {
                 {[
                   { label: 'Skills', href: '/about#skills' },
                   { label: 'Projects', href: '/projects' },
-                  { label: 'Certifications', href: '/about#certifications' },
+                  { label: 'Certifications', href: '/certifications' },
                 ].map((item) => (
                   <Link
                     key={item.label}
@@ -495,13 +536,15 @@ export default async function HomePage() {
               <h4 className="text-sm font-medium text-text mb-4">Connect</h4>
               <div className="flex flex-col gap-3">
                 <a
-                  href="mailto:hello@mdev.com"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=muhammadtahafarooq22@gmail.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm text-text-secondary hover:text-text transition-colors"
                 >
-                  hello@mdev.com
+                  muhammadtahafarooq22@gmail.com
                 </a>
                 <a
-                  href="https://github.com/mdev"
+                  href="https://github.com/muhammadtahafarooq"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-text-secondary hover:text-text transition-colors"
@@ -509,7 +552,7 @@ export default async function HomePage() {
                   GitHub
                 </a>
                 <a
-                  href="https://linkedin.com/in/mdev"
+                  href="https://linkedin.com/in/muhammadtaha"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-text-secondary hover:text-text transition-colors"
@@ -522,10 +565,19 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
+
+          <div className="mt-12 pt-8 border-t border-border">
+            <Link
+              href="/privacy"
+              className="text-sm text-text-muted hover:text-text transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </footer>
 
-      <div className="marquee-container">
+      <div className="marquee-container" aria-hidden="true">
         <div className="marquee-content">
           <span>MUHAMMAD TAHA</span>
           <span>MUHAMMAD TAHA</span>

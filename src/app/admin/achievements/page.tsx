@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, GripVertical } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Save } from 'lucide-react'
+import { PageHeader } from '@/components/admin/page-header'
+import { EmptyState } from '@/components/admin/empty-state'
+import { ConfirmDialog } from '@/components/admin/confirm-dialog'
+import { useToast } from '@/components/admin/toast'
 
 interface Achievement {
   id: number
@@ -11,146 +15,228 @@ interface Achievement {
   sortOrder: number
 }
 
-export default function AdminAchievementsPage() {
-  const [achievements, setAchievements] = useState<Achievement[]>([])
+const emptyForm = { title: '', description: '', date: '', sortOrder: 0 }
+
+export default function AchievementsAdmin() {
+  const [items, setItems] = useState<Achievement[]>([])
   const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState<Achievement | null>(null)
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    date: '',
-    sortOrder: 0,
-  })
+  const [error, setError] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
-    fetchAchievements()
+    fetchItems()
   }, [])
 
-  async function fetchAchievements() {
-    const res = await fetch('/api/admin/achievements')
-    const data = await res.json()
-    setAchievements(data)
-    setLoading(false)
+  const fetchItems = async () => {
+    try {
+      const res = await fetch('/api/admin/achievements')
+      if (!res.ok) throw new Error()
+      const json = await res.json()
+      setItems(json.data)
+    } catch {
+      setError('Failed to load achievements')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const method = editing ? 'PUT' : 'POST'
-    const url = editing ? `/api/admin/achievements/${editing.id}` : '/api/admin/achievements'
-
-    await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-
-    setForm({ title: '', description: '', date: '', sortOrder: 0 })
-    setEditing(null)
-    fetchAchievements()
+  const handleCreate = async () => {
+    if (!form.title.trim()) {
+      toast('Title is required', 'error')
+      return
+    }
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/achievements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error()
+      const json = await res.json()
+      setItems([...items, json.data])
+      setForm(emptyForm)
+      toast('Achievement added')
+    } catch {
+      toast('Failed to create', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  async function handleDelete(id: number) {
-    if (!confirm('Delete this achievement?')) return
-    await fetch(`/api/admin/achievements/${id}`, { method: 'DELETE' })
-    fetchAchievements()
+  const handleUpdate = async (id: number) => {
+    if (!form.title.trim()) {
+      toast('Title is required', 'error')
+      return
+    }
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/admin/achievements/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error()
+      const json = await res.json()
+      setItems(items.map((i) => (i.id === id ? json.data : i)))
+      setEditingId(null)
+      setForm(emptyForm)
+      toast('Achievement updated')
+    } catch {
+      toast('Failed to update', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function handleEdit(achievement: Achievement) {
-    setEditing(achievement)
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      const res = await fetch(`/api/admin/achievements/${deleteTarget}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      setItems(items.filter((i) => i.id !== deleteTarget))
+      toast('Achievement deleted')
+    } catch {
+      toast('Failed to delete', 'error')
+    } finally {
+      setDeleteTarget(null)
+    }
+  }
+
+  const startEdit = (item: Achievement) => {
+    setEditingId(item.id)
     setForm({
-      title: achievement.title,
-      description: achievement.description || '',
-      date: achievement.date || '',
-      sortOrder: achievement.sortOrder,
+      title: item.title,
+      description: item.description || '',
+      date: item.date || '',
+      sortOrder: item.sortOrder,
     })
   }
 
-  if (loading) return <div className="p-6">Loading...</div>
+  if (loading)
+    return (
+      <div className="text-text-muted font-mono text-xs animate-pulse">Loading achievements...</div>
+    )
+  if (error) return <div className="text-error text-sm p-8 text-center">{error}</div>
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="heading-h2">Achievements</h1>
-      </div>
+    <div>
+      <PageHeader title="Achievements" description={`${items.length} achievements`} />
 
-      <form onSubmit={handleSubmit} className="card mb-8">
-        <h2 className="heading-h4 mb-4">{editing ? 'Edit Achievement' : 'Add Achievement'}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-surface border border-border-base p-6 mb-8">
+        <h3 className="text-sm font-medium text-text-primary mb-4">
+          {editingId ? 'Edit Achievement' : 'Add Achievement'}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <input
-            placeholder="Title"
+            type="text"
+            placeholder="Title *"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="input"
-            required
+            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
           <input
             type="text"
             placeholder="Date"
             value={form.date}
             onChange={(e) => setForm({ ...form, date: e.target.value })}
-            className="input"
+            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
           <input
             type="number"
-            placeholder="Sort Order"
+            placeholder="Sort order"
             value={form.sortOrder}
             onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-            className="input"
-          />
-          <textarea
-            placeholder="Description"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="input md:col-span-2"
-            rows={3}
+            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
         </div>
-        <div className="flex gap-2 mt-4">
-          <button type="submit" className="btn-primary">
-            {editing ? 'Update' : 'Add'}
+        <textarea
+          placeholder="Description"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors w-full min-h-[80px] mb-4"
+        />
+        <div className="flex gap-2">
+          <button
+            onClick={editingId ? () => handleUpdate(editingId) : handleCreate}
+            disabled={saving}
+            className="bg-primary text-background font-mono text-xs uppercase tracking-widest px-6 py-2 rounded-sm hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {saving ? (
+              'Saving...'
+            ) : editingId ? (
+              <>
+                <Save size={14} /> Save
+              </>
+            ) : (
+              <>
+                <Plus size={14} /> Add
+              </>
+            )}
           </button>
-          {editing && (
+          {editingId && (
             <button
-              type="button"
               onClick={() => {
-                setEditing(null)
-                setForm({ title: '', description: '', date: '', sortOrder: 0 })
+                setEditingId(null)
+                setForm(emptyForm)
               }}
-              className="btn-secondary"
+              className="text-text-muted text-xs border border-border-base px-4 py-2 rounded-sm hover:text-text-primary transition-colors flex items-center gap-2"
             >
-              Cancel
+              <X size={14} /> Cancel
             </button>
           )}
         </div>
-      </form>
+      </div>
 
-      <div className="space-y-4">
-        {achievements.map((achievement) => (
-          <div key={achievement.id} className="card flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <GripVertical className="text-text-muted" size={16} />
-              <div>
-                <h3 className="font-medium">{achievement.title}</h3>
-                <p className="text-sm text-text-muted">{achievement.date}</p>
+      {items.length === 0 ? (
+        <EmptyState title="No achievements yet" description="Add your first achievement above" />
+      ) : (
+        <div className="space-y-3">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="bg-surface border border-border-base p-4 flex items-start justify-between group hover:border-border-hover transition-colors"
+            >
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-text-primary">{item.title}</h4>
+                {item.description && (
+                  <p className="text-xs text-text-muted mt-1 line-clamp-2">{item.description}</p>
+                )}
+                {item.date && (
+                  <p className="text-[11px] font-mono text-text-muted mt-2">{item.date}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-4 shrink-0">
+                <button
+                  onClick={() => startEdit(item)}
+                  className="p-2 text-text-muted hover:text-primary transition-colors"
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(item.id)}
+                  className="p-2 text-text-muted hover:text-error transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleEdit(achievement)}
-                className="p-2 hover:bg-surface rounded"
-              >
-                <Pencil size={16} />
-              </button>
-              <button
-                onClick={() => handleDelete(achievement.id)}
-                className="p-2 hover:bg-destructive/10 text-destructive rounded"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete Achievement"
+        message="This action cannot be undone."
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+        variant="danger"
+      />
     </div>
   )
 }

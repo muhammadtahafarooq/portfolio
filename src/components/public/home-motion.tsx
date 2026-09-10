@@ -19,7 +19,7 @@ export function HomeMotion({ projects, skills, technologies }: HomeMotionProps) 
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="relative z-10 container-main text-center">
           <Reveal delay={0.1}>
-            <p className="section-label text-center">Full-Stack + AI Developer</p>
+            <p className="section-label text-center">CS Student | Aspiring Full-Stack Developer</p>
           </Reveal>
           <Reveal delay={0.2}>
             <h1 className="heading-h1 mb-6 text-center">Muhammad Taha</h1>

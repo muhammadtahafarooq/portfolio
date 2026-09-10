@@ -1,45 +1,35 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
+import { educationSchema } from '@/lib/validators'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  const { session, error } = await requireAuth()
+  if (error) return error
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const education = await db.select().from(schema.education)
+    return apiSuccess(education)
+  } catch {
+    return apiError('Failed to fetch education')
   }
-
-  const education = await db.select().from(schema.education)
-  return NextResponse.json(education)
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   try {
     const body = await request.json()
+    const parsed = educationSchema.safeParse(body)
 
-    const result = await db
-      .insert(schema.education)
-      .values({
-        institution: body.institution,
-        qualification: body.qualification || null,
-        program: body.program || null,
-        description: body.description || null,
-        startDate: body.startDate || null,
-        endDate: body.endDate || null,
-        sortOrder: body.sortOrder || 0,
-      } as typeof schema.education.$inferInsert)
-      .returning()
+    if (!parsed.success) {
+      return apiError('Invalid input', 400)
+    }
 
-    return NextResponse.json(result[0])
-  } catch (error) {
-    console.error('Create education error:', error)
-    return NextResponse.json({ error: 'Failed to create education' }, { status: 500 })
+    const result = await db.insert(schema.education).values(parsed.data).returning()
+
+    return apiSuccess(result[0], 201)
+  } catch {
+    return apiError('Failed to create education')
   }
 }

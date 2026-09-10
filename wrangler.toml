@@ -1,0 +1,10 @@
+name = "taha-portfolio"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Cloudflare Pages configuration
+# Build command: npx @cloudflare/next-on-pages
+# Build output: .vercel/output/static
+
+# Environment variables are set in the Cloudflare dashboard, not here.
+# See .dev.vars.example for local development.

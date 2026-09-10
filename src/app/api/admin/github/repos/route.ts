@@ -1,19 +1,14 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const token = process.env.GITHUB_TOKEN
   const username = process.env.GITHUB_USERNAME
 
   if (!token || !username) {
-    return NextResponse.json({ repos: [], error: 'GitHub not configured' })
+    return apiError('GitHub not configured', 500)
   }
 
   try {
@@ -25,13 +20,13 @@ export async function GET() {
     })
 
     if (!res.ok) {
-      return NextResponse.json({ repos: [], error: 'Failed to fetch repos' })
+      return apiError('Failed to fetch repos from GitHub', 502)
     }
 
     const repos = await res.json()
-    return NextResponse.json({ repos })
-  } catch (error) {
-    console.error('GitHub repos error:', error)
-    return NextResponse.json({ repos: [], error: 'Failed to fetch repos' })
+    return apiSuccess({ repos })
+  } catch (err) {
+    console.error('GitHub repos error:', err)
+    return apiError('Failed to fetch repos', 500)
   }
 }

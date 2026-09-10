@@ -36,8 +36,8 @@ export function Footer({ socialLinks }: FooterProps) {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
             <p className="text-sm text-text-secondary mt-4 max-w-xs">
-              Full-Stack + AI Developer crafting innovative digital experiences at the intersection
-              of design and technology.
+              CS Student at NUML | Aspiring Full-Stack Developer building practical projects in web
+              development and software engineering.
             </p>
           </div>
 
@@ -50,8 +50,10 @@ export function Footer({ socialLinks }: FooterProps) {
                 { label: 'About', href: '/about' },
                 { label: 'Projects', href: '/projects' },
                 { label: 'Experience', href: '/experience' },
-                { label: 'Contact', href: '/contact' },
+                { label: 'Education', href: '/education' },
+                { label: 'Certifications', href: '/certifications' },
                 { label: 'Resume', href: '/resume' },
+                { label: 'Contact', href: '/contact' },
               ].map((item) => (
                 <Link
                   key={item.href}
@@ -99,6 +101,15 @@ export function Footer({ socialLinks }: FooterProps) {
           </p>
           <div className="flex gap-4">
             <Link
+              href="/privacy"
+              className="text-sm text-text-muted hover:text-text transition-colors group"
+            >
+              Privacy
+              <span className="inline-block group-hover:translate-x-1 transition-transform">
+                &rarr;
+              </span>
+            </Link>
+            <Link
               href="/admin"
               className="text-sm text-text-muted hover:text-text transition-colors group"
             >
@@ -108,6 +119,19 @@ export function Footer({ socialLinks }: FooterProps) {
               </span>
             </Link>
           </div>
+        </div>
+      </div>
+
+      <div className="marquee-container" aria-hidden="true">
+        <div className="marquee-content">
+          <span>MUHAMMAD TAHA</span>
+          <span>MUHAMMAD TAHA</span>
+          <span>MUHAMMAD TAHA</span>
+          <span>MUHAMMAD TAHA</span>
+          <span>MUHAMMAD TAHA</span>
+          <span>MUHAMMAD TAHA</span>
+          <span>MUHAMMAD TAHA</span>
+          <span>MUHAMMAD TAHA</span>
         </div>
       </div>
     </footer>

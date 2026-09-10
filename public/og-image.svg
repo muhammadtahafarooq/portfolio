@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0B0A09"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#gradient)"/>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#141312;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0B0A09;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <text x="120" y="240" font-family="Inter, sans-serif" font-weight="700" font-size="64" fill="#F1EDE5">Muhammad Taha</text>
+  <text x="120" y="320" font-family="Inter, sans-serif" font-weight="400" font-size="28" fill="#B8B0A4">CS Student | Full-Stack + AI Developer</text>
+  <line x1="120" y1="360" x2="240" y2="360" stroke="#D6A85F" stroke-width="4"/>
+  <text x="120" y="420" font-family="JetBrains Mono, monospace" font-weight="400" font-size="18" fill="#756E64">React · Next.js · TypeScript · Node.js</text>
+  <text x="120" y="540" font-family="JetBrains Mono, monospace" font-weight="400" font-size="16" fill="#756E64">muhammadtaha.dev</text>
+</svg>

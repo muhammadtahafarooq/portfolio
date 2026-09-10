@@ -1,64 +1,51 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
+import { siteSettingsSchema } from '@/lib/validators'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  try {
+    const { session, error } = await requireAuth()
+    if (error) return error
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const settings = await db.select().from(schema.siteSettings).limit(1)
+    return apiSuccess(settings[0] || null)
+  } catch {
+    return apiError('Failed to fetch settings')
   }
-
-  const settings = await db.select().from(schema.siteSettings).limit(1)
-  return NextResponse.json(settings[0] || null)
 }
 
 export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
-    const body = await request.json()
+    const { session, error } = await requireAuth()
+    if (error) return error
 
-    // Upsert: update if exists, insert if not
+    const body = await request.json()
+    const parsed = siteSettingsSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return apiError('Invalid input', 400)
+    }
+
     const existing = await db.select().from(schema.siteSettings).limit(1)
 
     if (existing.length > 0) {
       const result = await db
         .update(schema.siteSettings)
-        .set({
-          siteTitle: body.siteTitle,
-          siteDescription: body.siteDescription,
-          analyticsEnabled: body.analyticsEnabled,
-          animationIntensity: body.animationIntensity,
-          threeDEnabled: body.threeDEnabled,
-        })
+        .set(parsed.data)
         .where(eq(schema.siteSettings.id, 1))
         .returning()
 
-      return NextResponse.json(result[0])
-    } else {
-      const result = await db
-        .insert(schema.siteSettings)
-        .values({
-          id: 1,
-          siteTitle: body.siteTitle,
-          siteDescription: body.siteDescription,
-          analyticsEnabled: body.analyticsEnabled,
-          animationIntensity: body.animationIntensity,
-          threeDEnabled: body.threeDEnabled,
-        } as typeof schema.siteSettings.$inferInsert)
-        .returning()
-
-      return NextResponse.json(result[0])
+      return apiSuccess(result[0])
     }
-  } catch (error) {
-    console.error('Update settings error:', error)
-    return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
+
+    const result = await db
+      .insert(schema.siteSettings)
+      .values({ id: 1, ...parsed.data } as typeof schema.siteSettings.$inferInsert)
+      .returning()
+
+    return apiSuccess(result[0], 201)
+  } catch {
+    return apiError('Failed to update settings')
   }
 }

@@ -3,18 +3,23 @@ export const dynamic = 'force-dynamic'
 import { Metadata } from 'next'
 import { Reveal } from '@/components/motion'
 import { ContactForm } from './contact-form'
+import { SpaceBackground } from '@/components/public/space-background'
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Get in touch with Muhammad Taha - Full-Stack + AI Developer',
+  description: 'Get in touch with Muhammad Taha - CS Student | Aspiring Full-Stack Developer',
+  alternates: {
+    canonical: '/contact',
+  },
 }
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
+      <SpaceBackground />
       <section className="section-padding container-main">
         <div className="grid-12">
-          <div className="col-span-12 md:col-span-8">
+          <div className="col-span-12 md:col-span-8 relative z-10">
             <Reveal>
               <p className="section-label">04 / Contact</p>
             </Reveal>
@@ -42,7 +47,7 @@ export default function ContactPage() {
 
         <div className="thin-divider my-16" />
 
-        <div className="grid-12">
+        <div className="grid-12 relative z-10">
           <div className="col-span-12 md:col-span-7">
             <Reveal>
               <p className="section-label mb-8">Initiate Transmission</p>
@@ -58,7 +63,9 @@ export default function ContactPage() {
             <div className="space-y-8">
               <Reveal delay={0.15}>
                 <div>
-                  <p className="technical-text mb-2">Direct Protocol</p>
+                  <p className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-2">
+                    Direct Protocol
+                  </p>
                   <a
                     href="mailto:muhammadtahafarooq22@gmail.com"
                     className="text-text hover:text-primary transition-colors duration-300 text-body-lg"
@@ -70,21 +77,27 @@ export default function ContactPage() {
 
               <Reveal delay={0.2}>
                 <div>
-                  <p className="technical-text mb-2">Physical Coordinates</p>
+                  <p className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-2">
+                    Physical Coordinates
+                  </p>
                   <p className="text-text-secondary text-body-lg">Multan, Pakistan</p>
                 </div>
               </Reveal>
 
               <Reveal delay={0.25}>
                 <div>
-                  <p className="technical-text mb-2">Response Latency</p>
+                  <p className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-2">
+                    Response Latency
+                  </p>
                   <p className="text-text-secondary text-body-lg">24–48 hours</p>
                 </div>
               </Reveal>
 
               <Reveal delay={0.3}>
                 <div className="pt-4">
-                  <p className="technical-text mb-4">External Nodes</p>
+                  <p className="text-sm font-medium text-text-secondary uppercase tracking-wide mb-4">
+                    External Nodes
+                  </p>
                   <div className="space-y-3">
                     <a
                       href="https://linkedin.com/in/muhammadtaha"
@@ -99,6 +112,7 @@ export default function ContactPage() {
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                         strokeWidth={2}
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -108,7 +122,7 @@ export default function ContactPage() {
                       </svg>
                     </a>
                     <a
-                      href="https://github.com/muhammadtaha"
+                      href="https://github.com/muhammadtahafarooq"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors duration-300 group"
@@ -120,6 +134,7 @@ export default function ContactPage() {
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                         strokeWidth={2}
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -129,7 +144,7 @@ export default function ContactPage() {
                       </svg>
                     </a>
                     <a
-                      href="https://wa.me/923001234567"
+                      href="https://wa.me/923348010708"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors duration-300 group"
@@ -141,6 +156,7 @@ export default function ContactPage() {
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                         strokeWidth={2}
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"

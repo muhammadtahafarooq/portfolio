@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a1628"/>
+      <stop offset="100%" style="stop-color:#0d2137"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6fa37a"/>
+      <stop offset="100%" style="stop-color:#4a8f6a"/>
+    </linearGradient>
+  </defs>
+  <rect fill="url(#bg)" width="1200" height="680"/>
+  <rect x="60" y="60" width="1080" height="560" rx="12" fill="none" stroke="#1a3a5c" stroke-width="1"/>
+  <rect x="60" y="60" width="1080" height="60" rx="12" fill="#0d2137"/>
+  <rect x="60" y="80" width="1080" height="20" fill="#0d2137"/>
+  <circle cx="90" cy="90" r="6" fill="#ff5f57"/>
+  <circle cx="110" cy="90" r="6" fill="#ffbd2e"/>
+  <circle cx="130" cy="90" r="6" fill="#28c840"/>
+  <text fill="#5a7a9a" font-family="monospace" font-size="13" x="160" y="94">student-management-system</text>
+  <rect x="80" y="140" width="320" height="180" rx="8" fill="#0f1f35" stroke="#1a3a5c" stroke-width="1"/>
+  <text fill="#6fa37a" font-family="sans-serif" font-size="14" font-weight="bold" x="100" y="175">DASHBOARD</text>
+  <rect x="100" y="195" width="120" height="8" rx="4" fill="#1a3a5c"/>
+  <rect x="100" y="215" width="80" height="8" rx="4" fill="#1a3a5c"/>
+  <rect x="100" y="245" width="280" height="1" fill="#1a3a5c"/>
+  <rect x="100" y="265" width="60" height="24" rx="4" fill="#6fa37a" opacity="0.2"/>
+  <text fill="#6fa37a" font-family="monospace" font-size="11" x="112" y="282">452</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="10" x="145" y="282">Students</text>
+  <rect x="180" y="265" width="60" height="24" rx="4" fill="#4a9ead" opacity="0.2"/>
+  <text fill="#4a9ead" font-family="monospace" font-size="11" x="192" y="282">28</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="10" x="215" y="282">Faculty</text>
+  <rect x="260" y="265" width="60" height="24" rx="4" fill="#c9a55f" opacity="0.2"/>
+  <text fill="#c9a55f" font-family="monospace" font-size="11" x="272" y="282">12</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="10" x="295" y="282">Courses</text>
+  <rect x="440" y="140" width="340" height="180" rx="8" fill="#0f1f35" stroke="#1a3a5c" stroke-width="1"/>
+  <text fill="#6fa37a" font-family="sans-serif" font-size="14" font-weight="bold" x="460" y="175">STUDENT RECORDS</text>
+  <rect x="460" y="195" width="300" height="1" fill="#1a3a5c"/>
+  <rect x="460" y="210" width="300" height="28" fill="#0a1628"/>
+  <text fill="#5a7a9a" font-family="monospace" font-size="10" x="470" y="228">NAME</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="10" x="570" y="228">ID</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="10" x="650" y="228">GPA</text>
+  <text fill="#e0e0e0" font-family="monospace" font-size="11" x="470" y="256">Ahmed Khan</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="11" x="570" y="256">CS-001</text>
+  <text fill="#6fa37a" font-family="monospace" font-size="11" x="650" y="256">3.8</text>
+  <rect x="460" y="265" width="300" height="1" fill="#1a3a5c"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="11" x="470" y="288">Sara Malik</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="11" x="570" y="288">CS-002</text>
+  <text fill="#6fa37a" font-family="monospace" font-size="11" x="650" y="288">3.6</text>
+  <rect x="820" y="140" width="300" height="180" rx="8" fill="#0f1f35" stroke="#1a3a5c" stroke-width="1"/>
+  <text fill="#6fa37a" font-family="sans-serif" font-size="14" font-weight="bold" x="840" y="175">ATTENDANCE</text>
+  <rect x="840" y="200" width="20" height="80" rx="2" fill="#6fa37a" opacity="0.6"/>
+  <rect x="870" y="220" width="20" height="60" rx="2" fill="#6fa37a" opacity="0.5"/>
+  <rect x="900" y="210" width="20" height="70" rx="2" fill="#6fa37a" opacity="0.7"/>
+  <rect x="930" y="230" width="20" height="50" rx="2" fill="#6fa37a" opacity="0.4"/>
+  <rect x="960" y="205" width="20" height="75" rx="2" fill="#6fa37a" opacity="0.6"/>
+  <rect x="990" y="215" width="20" height="65" rx="2" fill="#6fa37a" opacity="0.55"/>
+  <rect x="1020" y="200" width="20" height="80" rx="2" fill="#6fa37a" opacity="0.65"/>
+  <text fill="#5a7a9a" font-family="monospace" font-size="9" x="845" y="300">Mon</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="9" x="875" y="300">Tue</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="9" x="905" y="300">Wed</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="9" x="935" y="300">Thu</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="9" x="965" y="300">Fri</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="9" x="995" y="300">Sat</text>
+  <text fill="#5a7a9a" font-family="monospace" font-size="9" x="1025" y="300">Sun</text>
+  <rect x="80" y="360" width="520" height="240" rx="8" fill="#0f1f35" stroke="#1a3a5c" stroke-width="1"/>
+  <text fill="#6fa37a" font-family="sans-serif" font-size="14" font-weight="bold" x="100" y="395">GRADE DISTRIBUTION</text>
+  <rect x="110" y="420" width="40" height="140" rx="4" fill="#6fa37a" opacity="0.7"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="11" x="120" y="580">A</text>
+  <rect x="180" y="450" width="40" height="110" rx="4" fill="#6fa37a" opacity="0.55"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="11" x="190" y="580">B</text>
+  <rect x="250" y="470" width="40" height="90" rx="4" fill="#6fa37a" opacity="0.4"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="11" x="260" y="580">C</text>
+  <rect x="320" y="500" width="40" height="60" rx="4" fill="#c9a55f" opacity="0.4"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="11" x="330" y="580">D</text>
+  <rect x="390" y="520" width="40" height="40" rx="4" fill="#ff5f57" opacity="0.4"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="11" x="400" y="580">F</text>
+  <rect x="640" y="360" width="480" height="240" rx="8" fill="#0f1f35" stroke="#1a3a5c" stroke-width="1"/>
+  <text fill="#6fa37a" font-family="sans-serif" font-size="14" font-weight="bold" x="660" y="395">COURSES</text>
+  <rect x="660" y="415" width="440" height="36" rx="4" fill="#0a1628"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="12" x="675" y="438">CS101 - Data Structures</text>
+  <text fill="#6fa37a" font-family="monospace" font-size="12" x="960" y="438">3.0</text>
+  <rect x="660" y="460" width="440" height="36" rx="4" fill="#0a1628"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="12" x="675" y="483">CS201 - Database Systems</text>
+  <text fill="#6fa37a" font-family="monospace" font-size="12" x="960" y="483">3.5</text>
+  <rect x="660" y="505" width="440" height="36" rx="4" fill="#0a1628"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="12" x="675" y="528">CS301 - Web Development</text>
+  <text fill="#6fa37a" font-family="monospace" font-size="12" x="960" y="528">3.8</text>
+  <rect x="660" y="550" width="440" height="36" rx="4" fill="#0a1628"/>
+  <text fill="#e0e0e0" font-family="monospace" font-size="12" x="675" y="573">MA101 - Linear Algebra</text>
+  <text fill="#6fa37a" font-family="monospace" font-size="12" x="960" y="573">3.2</text>
+</svg>

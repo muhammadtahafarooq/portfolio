@@ -1,54 +1,43 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
+import { resumeSchema } from '@/lib/validators'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  try {
+    const { session, error } = await requireAuth()
+    if (error) return error
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const result = await db.select().from(schema.resume).limit(1)
+    return apiSuccess(result[0] || null)
+  } catch {
+    return apiError('Failed to fetch resume')
   }
-
-  const result = await db.select().from(schema.resume).limit(1)
-  return NextResponse.json(result[0] || null)
 }
 
 export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
+    const { session, error } = await requireAuth()
+    if (error) return error
+
     const body = await request.json()
+    const parsed = resumeSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return apiError('Invalid input', 400)
+    }
 
     const existing = await db.select().from(schema.resume).limit(1)
 
     if (existing.length > 0) {
-      const result = await db
-        .update(schema.resume)
-        .set({
-          content: body.content,
-          pdfUrl: body.pdfUrl,
-        })
-        .returning()
+      const result = await db.update(schema.resume).set(parsed.data).returning()
 
-      return NextResponse.json(result[0])
-    } else {
-      const result = await db
-        .insert(schema.resume)
-        .values({
-          content: body.content,
-          pdfUrl: body.pdfUrl,
-        })
-        .returning()
-
-      return NextResponse.json(result[0])
+      return apiSuccess(result[0])
     }
-  } catch (error) {
-    console.error('Update resume error:', error)
-    return NextResponse.json({ error: 'Failed to update resume' }, { status: 500 })
+
+    const result = await db.insert(schema.resume).values(parsed.data).returning()
+
+    return apiSuccess(result[0], 201)
+  } catch {
+    return apiError('Failed to update resume')
   }
 }

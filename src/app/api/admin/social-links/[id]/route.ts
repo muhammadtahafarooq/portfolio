@@ -1,75 +1,85 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
+import { requireAuth, apiError, apiSuccess, validateId, invalidIdResponse } from '@/lib/api-helpers'
+import { socialLinkSchema } from '@/lib/validators'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
-  const item = await db
-    .select()
-    .from(schema.socialLinks)
-    .where(eq(schema.socialLinks.id, parseInt(id)))
-    .limit(1)
+  const numId = validateId(id)
+  if (numId === null) return invalidIdResponse()
 
-  if (item.length === 0) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  try {
+    const item = await db
+      .select()
+      .from(schema.socialLinks)
+      .where(eq(schema.socialLinks.id, numId))
+      .limit(1)
+
+    if (item.length === 0) {
+      return apiError('Not found', 404)
+    }
+
+    return apiSuccess(item[0])
+  } catch (error) {
+    return apiError('Failed to fetch social link')
   }
-
-  return NextResponse.json(item[0])
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
+  const numId = validateId(id)
+  if (numId === null) return invalidIdResponse()
 
   try {
     const body = await request.json()
+    const parsed = socialLinkSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return apiError('Validation failed', 400)
+    }
 
     const result = await db
       .update(schema.socialLinks)
-      .set({
-        platform: body.platform,
-        url: body.url,
-        isVisible: body.isVisible,
-        sortOrder: body.sortOrder,
-      })
-      .where(eq(schema.socialLinks.id, parseInt(id)))
+      .set(parsed.data)
+      .where(eq(schema.socialLinks.id, numId))
       .returning()
 
-    return NextResponse.json(result[0])
+    if (result.length === 0) {
+      return apiError('Not found', 404)
+    }
+
+    return apiSuccess(result[0])
   } catch (error) {
-    console.error('Update social link error:', error)
-    return NextResponse.json({ error: 'Failed to update social link' }, { status: 500 })
+    return apiError('Failed to update social link')
   }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
+  const numId = validateId(id)
+  if (numId === null) return invalidIdResponse()
 
   try {
-    await db.delete(schema.socialLinks).where(eq(schema.socialLinks.id, parseInt(id)))
+    const result = await db
+      .delete(schema.socialLinks)
+      .where(eq(schema.socialLinks.id, numId))
+      .returning()
 
-    return NextResponse.json({ success: true })
+    if (result.length === 0) {
+      return apiError('Not found', 404)
+    }
+
+    return apiSuccess({ success: true })
   } catch (error) {
-    console.error('Delete social link error:', error)
-    return NextResponse.json({ error: 'Failed to delete social link' }, { status: 500 })
+    return apiError('Failed to delete social link')
   }
 }

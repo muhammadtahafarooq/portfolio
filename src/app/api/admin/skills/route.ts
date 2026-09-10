@@ -1,42 +1,35 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
+import { skillSchema } from '@/lib/validators'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  const { session, error } = await requireAuth()
+  if (error) return error
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const skills = await db.select().from(schema.skills)
+    return apiSuccess(skills)
+  } catch {
+    return apiError('Failed to fetch skills')
   }
-
-  const skills = await db.select().from(schema.skills)
-  return NextResponse.json(skills)
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   try {
     const body = await request.json()
+    const parsed = skillSchema.safeParse(body)
 
-    const result = await db
-      .insert(schema.skills)
-      .values({
-        name: body.name,
-        category: body.category || null,
-        description: body.description || null,
-        sortOrder: body.sortOrder || 0,
-      } as typeof schema.skills.$inferInsert)
-      .returning()
+    if (!parsed.success) {
+      return apiError('Invalid input', 400)
+    }
 
-    return NextResponse.json(result[0])
-  } catch (error) {
-    console.error('Create skill error:', error)
-    return NextResponse.json({ error: 'Failed to create skill' }, { status: 500 })
+    const result = await db.insert(schema.skills).values(parsed.data).returning()
+
+    return apiSuccess(result[0], 201)
+  } catch {
+    return apiError('Failed to create skill')
   }
 }

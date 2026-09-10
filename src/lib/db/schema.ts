@@ -10,7 +10,7 @@ import { sql } from 'drizzle-orm'
 export const profile = sqliteTable('profile', {
   id: integer('id').primaryKey().default(1),
   name: text('name').notNull().default('Muhammad Taha'),
-  title: text('title').notNull().default('Full-Stack + AI Developer'),
+  title: text('title').notNull().default('CS Student | Aspiring Full-Stack Developer'),
   shortBio: text('short_bio'),
   email: text('email'),
   phone: text('phone'),
@@ -237,7 +237,7 @@ export const homepageContent = sqliteTable('homepage_content', {
 // Notes:
 //   - animation_intensity: 'reduced' | 'standard' | 'enhanced'
 //   - three_d_enabled: Toggle 3D experience on/off
-//   - analytics_enabled: Toggle Vercel Analytics
+//   - analytics_enabled: Toggle analytics
 // ============================================================================
 
 export const siteSettings = sqliteTable('site_settings', {
@@ -267,6 +267,21 @@ export const adminUsers = sqliteTable('admin_users', {
 })
 
 // ============================================================================
+// TABLE: password_reset_tokens
+// Purpose: Store password reset tokens for admin account recovery
+// Pattern: Collection (tokens with expiry)
+// ============================================================================
+
+export const passwordResetTokens = sqliteTable('password_reset_tokens', {
+  id: integer('id').primaryKey(),
+  token: text('token').unique().notNull(),
+  email: text('email').notNull(),
+  expiresAt: text('expires_at').notNull(),
+  used: integer('used', { mode: 'boolean' }).notNull().default(false),
+  createdAt: text('created_at').default(sql`datetime('now')`),
+})
+
+// ============================================================================
 // TYPES
 // ============================================================================
 
@@ -285,6 +300,7 @@ export type ContactMessage = typeof contactMessages.$inferSelect
 export type HomepageContent = typeof homepageContent.$inferSelect
 export type SiteSettings = typeof siteSettings.$inferSelect
 export type AdminUser = typeof adminUsers.$inferSelect
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect
 
 export type ProfileInsert = typeof profile.$inferInsert
 export type AboutInsert = typeof about.$inferInsert
@@ -301,3 +317,4 @@ export type ContactMessageInsert = typeof contactMessages.$inferInsert
 export type HomepageContentInsert = typeof homepageContent.$inferInsert
 export type SiteSettingsInsert = typeof siteSettings.$inferInsert
 export type AdminUserInsert = typeof adminUsers.$inferInsert
+export type PasswordResetTokenInsert = typeof passwordResetTokens.$inferInsert

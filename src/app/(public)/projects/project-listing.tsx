@@ -38,13 +38,13 @@ export function ProjectListing({ projects }: ProjectListingProps) {
               <Link href={`/projects/${project.slug}`} className="block group">
                 <div className="grid-12 items-center gap-gutter">
                   <div className={`${colImage} ${imageOrder}`}>
-                    <div className="relative aspect-video bg-surface border border-border-base overflow-hidden">
+                    <div className="relative aspect-video bg-background border border-border-base overflow-hidden">
                       {screenshotUrl ? (
                         <Image
                           src={screenshotUrl}
                           alt={project.title}
                           fill
-                          className="object-cover transition-transform duration-cinematic group-hover:scale-105"
+                          className="object-contain p-4 transition-transform duration-cinematic group-hover:scale-105"
                           sizes="(max-width: 768px) 100vw, 60vw"
                         />
                       ) : (

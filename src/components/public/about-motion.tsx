@@ -21,8 +21,8 @@ export function AboutMotion({ about, skills, technologies }: AboutMotionProps) {
           <p className="section-label">About</p>
           <h1 className="heading-h1 mb-6">Muhammad Taha</h1>
           <p className="body-text-lg text-text-secondary max-w-2xl">
-            Full-Stack + AI Developer crafting innovative digital experiences at the intersection of
-            design and technology.
+            CS Student at NUML | Aspiring Full-Stack Developer building practical projects at the
+            intersection of design and technology.
           </p>
         </Reveal>
       </section>

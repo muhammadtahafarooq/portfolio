@@ -45,7 +45,7 @@ export function ContactSection() {
   }
 
   return (
-    <div className="grid-12 items-start">
+    <div className="grid-12 items-start relative z-10">
       <div className="col-span-12 md:col-span-5">
         <h2 className="heading-h2 mb-6 text-text">Ready to build something exceptional?</h2>
         <p className="body-text-lg text-text-secondary mb-8">
@@ -55,11 +55,11 @@ export function ContactSection() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Mail size={16} className="text-primary" />
-            <span className="text-sm text-text-secondary">hello@mdev.com</span>
+            <span className="text-sm text-text">muhammadtahafarooq22@gmail.com</span>
           </div>
           <div className="flex items-center gap-3">
             <MapPin size={16} className="text-primary" />
-            <span className="text-sm text-text-secondary">Multan, Pakistan</span>
+            <span className="text-sm text-text">Multan, Pakistan</span>
           </div>
         </div>
       </div>

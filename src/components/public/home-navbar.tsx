@@ -6,12 +6,16 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { FerrisText } from '@/components/motion/ferris-text'
 
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Projects', href: '/projects' },
   { label: 'Experience', href: '/experience' },
+  { label: 'Education', href: '/education' },
+  { label: 'Certifications', href: '/certifications' },
+  { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -33,17 +37,19 @@ export function HomeNavbar() {
           <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-4 lg:gap-6 xl:gap-8">
           {navLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
                 'text-sm font-medium transition-colors duration-150 relative group',
-                pathname === item.href ? 'text-primary' : 'text-text-secondary hover:text-text'
+                pathname === item.href ? 'text-primary' : 'text-text-secondary hover:text-text',
+                item.href === '/education' && 'hidden lg:inline-block',
+                item.href === '/certifications' && 'hidden lg:inline-block'
               )}
             >
-              {item.label}
+              <FerrisText text={item.label} />
               {pathname !== item.href && (
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
               )}

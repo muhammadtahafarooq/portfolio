@@ -1,0 +1,31 @@
+# Muhammad Taha — Portfolio
+
+## About
+
+CS Student at NUML | Full-Stack + AI Developer building practical projects in web development and AI-powered applications.
+
+## Pages
+
+- **Home** (/): Portfolio overview with featured projects, skills, and professional background
+- **About** (/about): Biography, philosophy, and technical profile
+- **Projects** (/projects): Selected project showcase with case studies
+- **Experience** (/experience): Professional experience and roles
+- **Education** (/education): Academic background at NUML
+- **Certifications** (/certifications): Professional certifications and achievements
+- **Resume** (/resume): Full resume with download option
+- **Contact** (/contact): Contact form and social links
+
+## Contact
+
+- Email: muhammadtahafarooq22@gmail.com
+- GitHub: https://github.com/muhammadtahafarooq
+- LinkedIn: https://linkedin.com/in/muhammadtaha
+- WhatsApp: https://wa.me/923348010708
+
+## Location
+
+Multan, Pakistan
+
+## Technologies Used
+
+React, Next.js, TypeScript, Tailwind CSS, Node.js, PHP, Laravel, MySQL, PostgreSQL, Python, AI/ML

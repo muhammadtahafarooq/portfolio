@@ -1,78 +1,85 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
+import { requireAuth, apiError, apiSuccess, validateId, invalidIdResponse } from '@/lib/api-helpers'
+import { experienceSchema } from '@/lib/validators'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
-  const item = await db
-    .select()
-    .from(schema.experience)
-    .where(eq(schema.experience.id, parseInt(id)))
-    .limit(1)
+  const numericId = validateId(id)
+  if (numericId === null) return invalidIdResponse()
 
-  if (item.length === 0) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  try {
+    const item = await db
+      .select()
+      .from(schema.experience)
+      .where(eq(schema.experience.id, numericId))
+      .limit(1)
+
+    if (item.length === 0) {
+      return apiError('Experience not found', 404)
+    }
+
+    return apiSuccess(item[0])
+  } catch {
+    return apiError('Failed to fetch experience')
   }
-
-  return NextResponse.json(item[0])
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
+  const numericId = validateId(id)
+  if (numericId === null) return invalidIdResponse()
 
   try {
     const body = await request.json()
+    const parsed = experienceSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return apiError('Invalid input', 400)
+    }
 
     const result = await db
       .update(schema.experience)
-      .set({
-        role: body.role,
-        organization: body.organization,
-        description: body.description,
-        startDate: body.startDate,
-        endDate: body.endDate,
-        isCurrent: body.isCurrent,
-        sortOrder: body.sortOrder,
-      })
-      .where(eq(schema.experience.id, parseInt(id)))
+      .set(parsed.data)
+      .where(eq(schema.experience.id, numericId))
       .returning()
 
-    return NextResponse.json(result[0])
-  } catch (error) {
-    console.error('Update experience error:', error)
-    return NextResponse.json({ error: 'Failed to update experience' }, { status: 500 })
+    if (result.length === 0) {
+      return apiError('Experience not found', 404)
+    }
+
+    return apiSuccess(result[0])
+  } catch {
+    return apiError('Failed to update experience')
   }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
+  const numericId = validateId(id)
+  if (numericId === null) return invalidIdResponse()
 
   try {
-    await db.delete(schema.experience).where(eq(schema.experience.id, parseInt(id)))
+    const result = await db
+      .delete(schema.experience)
+      .where(eq(schema.experience.id, numericId))
+      .returning()
 
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Delete experience error:', error)
-    return NextResponse.json({ error: 'Failed to delete experience' }, { status: 500 })
+    if (result.length === 0) {
+      return apiError('Experience not found', 404)
+    }
+
+    return apiSuccess({ success: true })
+  } catch {
+    return apiError('Failed to delete experience')
   }
 }

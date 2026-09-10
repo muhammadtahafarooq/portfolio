@@ -1,6 +1,8 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
+import { eq } from 'drizzle-orm'
+import { db, schema } from '@/lib/db'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,35 +17,33 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // In production, validate against database
-        // For now, use environment variables
-        const adminEmail = process.env.ADMIN_EMAIL
-        const adminPassword = process.env.ADMIN_PASSWORD
+        const users = await db
+          .select()
+          .from(schema.adminUsers)
+          .where(eq(schema.adminUsers.email, credentials.email))
+          .limit(1)
 
-        if (!adminEmail || !adminPassword) {
+        const user = users[0]
+        if (!user) {
           return null
         }
 
-        if (credentials.email !== adminEmail) {
-          return null
-        }
-
-        const isValid = await bcrypt.compare(credentials.password, adminPassword)
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
         if (!isValid) {
           return null
         }
 
         return {
-          id: '1',
-          email: adminEmail,
-          name: 'Admin',
+          id: String(user.id),
+          email: user.email,
+          name: 'Muhammad Taha',
         }
       },
     }),
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 5 * 60,
   },
   pages: {
     signIn: '/admin/login',

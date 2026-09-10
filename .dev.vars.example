@@ -1,0 +1,31 @@
+# Cloudflare Pages local development environment variables
+# Copy this file to .dev.vars and fill in the values.
+# These are used when running `npm run pages:dev`.
+
+# Database (Turso — works via HTTP, no native bindings needed)
+TURSO_DATABASE_URL=
+TURSO_AUTH_TOKEN=
+
+# Authentication
+NEXTAUTH_SECRET=your-production-secret-here
+NEXTAUTH_URL=http://localhost:8788
+ADMIN_EMAIL=muhammadtahafarooq22@gmail.com
+ADMIN_PASSWORD=$2a$12$noX.KcDh/X302gD3PxgfXeGYWf/ef6B8tRimrM9HOR69TImtsHWdu
+
+# Email (Resend)
+RESEND_API_KEY=
+CONTACT_EMAIL=
+
+# Storage (Cloudflare R2)
+CLOUDFLARE_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+R2_PUBLIC_URL=
+
+# GitHub
+GITHUB_TOKEN=
+GITHUB_USERNAME=
+
+# App
+NEXT_PUBLIC_SITE_URL=http://localhost:8788

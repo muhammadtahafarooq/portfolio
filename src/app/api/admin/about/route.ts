@@ -1,56 +1,48 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
+import { eq } from 'drizzle-orm'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
+import { aboutSchema } from '@/lib/validators'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  try {
+    const { session, error } = await requireAuth()
+    if (error) return error
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const result = await db.select().from(schema.about).limit(1)
+    return apiSuccess(result[0] || null)
+  } catch {
+    return apiError('Failed to fetch about')
   }
-
-  const result = await db.select().from(schema.about).limit(1)
-  return NextResponse.json(result[0] || null)
 }
 
 export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
+    const { session, error } = await requireAuth()
+    if (error) return error
+
     const body = await request.json()
+    const parsed = aboutSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return apiError('Invalid input', 400)
+    }
 
     const existing = await db.select().from(schema.about).limit(1)
 
     if (existing.length > 0) {
       const result = await db
         .update(schema.about)
-        .set({
-          biography: body.biography,
-          profileContent: body.profileContent,
-          interests: body.interests,
-        })
+        .set(parsed.data)
+        .where(eq(schema.about.id, existing[0].id))
         .returning()
 
-      return NextResponse.json(result[0])
-    } else {
-      const result = await db
-        .insert(schema.about)
-        .values({
-          biography: body.biography || '',
-          profileContent: body.profileContent,
-          interests: body.interests,
-        })
-        .returning()
-
-      return NextResponse.json(result[0])
+      return apiSuccess(result[0])
     }
-  } catch (error) {
-    console.error('Update about error:', error)
-    return NextResponse.json({ error: 'Failed to update about' }, { status: 500 })
+
+    const result = await db.insert(schema.about).values(parsed.data).returning()
+
+    return apiSuccess(result[0], 201)
+  } catch {
+    return apiError('Failed to update about')
   }
 }

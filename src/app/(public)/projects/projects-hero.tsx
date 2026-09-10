@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Reveal } from '@/components/motion'
 
 export function ProjectsHero() {
@@ -18,13 +19,15 @@ export function ProjectsHero() {
         </Reveal>
 
         <Reveal className="col-span-5 md:col-span-5 mt-12 md:mt-0" delay={0.2}>
-          <div className="relative border border-border-base bg-surface aspect-square flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-grid-lines opacity-40" />
-            <div className="relative z-10 text-center">
-              <p className="font-technical-sm text-text-muted uppercase tracking-technical">
-                Visual Composition
-              </p>
-            </div>
+          <div className="relative border border-border-base bg-surface aspect-square overflow-hidden">
+            <Image
+              src="/images/projects-hero.svg"
+              alt="Projects visual composition"
+              fill
+              sizes="(max-width: 768px) 100vw, 40vw"
+              className="object-cover"
+              priority
+            />
           </div>
         </Reveal>
       </div>

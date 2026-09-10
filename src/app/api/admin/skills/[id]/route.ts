@@ -1,75 +1,82 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
+import { requireAuth, apiError, apiSuccess, validateId, invalidIdResponse } from '@/lib/api-helpers'
+import { skillSchema } from '@/lib/validators'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
-  const skill = await db
-    .select()
-    .from(schema.skills)
-    .where(eq(schema.skills.id, parseInt(id)))
-    .limit(1)
+  const numericId = validateId(id)
+  if (numericId === null) return invalidIdResponse()
 
-  if (skill.length === 0) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  try {
+    const skill = await db
+      .select()
+      .from(schema.skills)
+      .where(eq(schema.skills.id, numericId))
+      .limit(1)
+
+    if (skill.length === 0) {
+      return apiError('Skill not found', 404)
+    }
+
+    return apiSuccess(skill[0])
+  } catch {
+    return apiError('Failed to fetch skill')
   }
-
-  return NextResponse.json(skill[0])
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
+  const numericId = validateId(id)
+  if (numericId === null) return invalidIdResponse()
 
   try {
     const body = await request.json()
+    const parsed = skillSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return apiError('Invalid input', 400)
+    }
 
     const result = await db
       .update(schema.skills)
-      .set({
-        name: body.name,
-        category: body.category,
-        description: body.description,
-        sortOrder: body.sortOrder,
-      })
-      .where(eq(schema.skills.id, parseInt(id)))
+      .set(parsed.data)
+      .where(eq(schema.skills.id, numericId))
       .returning()
 
-    return NextResponse.json(result[0])
-  } catch (error) {
-    console.error('Update skill error:', error)
-    return NextResponse.json({ error: 'Failed to update skill' }, { status: 500 })
+    if (result.length === 0) {
+      return apiError('Skill not found', 404)
+    }
+
+    return apiSuccess(result[0])
+  } catch {
+    return apiError('Failed to update skill')
   }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   const { id } = await params
+  const numericId = validateId(id)
+  if (numericId === null) return invalidIdResponse()
 
   try {
-    await db.delete(schema.skills).where(eq(schema.skills.id, parseInt(id)))
+    const result = await db.delete(schema.skills).where(eq(schema.skills.id, numericId)).returning()
 
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Delete skill error:', error)
-    return NextResponse.json({ error: 'Failed to delete skill' }, { status: 500 })
+    if (result.length === 0) {
+      return apiError('Skill not found', 404)
+    }
+
+    return apiSuccess({ success: true })
+  } catch {
+    return apiError('Failed to delete skill')
   }
 }

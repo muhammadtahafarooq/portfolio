@@ -1,33 +1,42 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
 import { uploadImage } from '@/lib/storage'
 
-export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+const MAX_SIZE = 5 * 1024 * 1024
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+export async function POST(request: Request) {
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   try {
     const formData = await request.formData()
-    const file = formData.get('file') as File
+    const file = formData.get('file') as File | null
     const folder = (formData.get('folder') as string) || 'uploads'
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+      return apiError('No file provided', 400)
     }
 
-    const result = await uploadImage({ file, folder })
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return apiError('Invalid file type. Allowed: JPEG, PNG, WebP, GIF, SVG', 400)
+    }
+
+    if (file.size > MAX_SIZE) {
+      return apiError('File too large. Maximum size: 5MB', 400)
+    }
+
+    const sanitizedFolder = folder.replace(/[^a-zA-Z0-9/_-]/g, '').replace(/\.\./g, '')
+
+    const result = await uploadImage({ file, folder: sanitizedFolder })
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 500 })
+      return apiError(result.error || 'Failed to upload file', 500)
     }
 
-    return NextResponse.json({ url: result.url })
-  } catch (error) {
-    console.error('Upload error:', error)
-    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
+    return apiSuccess({ url: result.url })
+  } catch (err) {
+    console.error('Upload error:', err)
+    return apiError('Failed to upload file', 500)
   }
 }

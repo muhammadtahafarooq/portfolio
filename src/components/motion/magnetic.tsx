@@ -92,7 +92,7 @@ interface CursorGlowProps {
 
 export function CursorGlow({
   className,
-  color = 'rgba(139, 92, 246, 0.15)',
+  color = 'rgba(214, 168, 95, 0.15)',
   size = 400,
   blur = 100,
 }: CursorGlowProps) {

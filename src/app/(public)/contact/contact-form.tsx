@@ -69,7 +69,10 @@ export function ContactForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8" noValidate>
       <Reveal>
         <div>
-          <label htmlFor="name" className="technical-text mb-2 block">
+          <label
+            htmlFor="name"
+            className="text-sm font-medium text-text mb-2 block uppercase tracking-wide"
+          >
             Identification / Name
           </label>
           <input
@@ -86,7 +89,10 @@ export function ContactForm() {
       <Reveal delay={0.05}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <label htmlFor="email" className="technical-text mb-2 block">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-text mb-2 block uppercase tracking-wide"
+            >
               Email Address
             </label>
             <input
@@ -101,7 +107,10 @@ export function ContactForm() {
             )}
           </div>
           <div>
-            <label htmlFor="subject" className="technical-text mb-2 block">
+            <label
+              htmlFor="subject"
+              className="text-sm font-medium text-text mb-2 block uppercase tracking-wide"
+            >
               Subject
             </label>
             <input
@@ -120,7 +129,10 @@ export function ContactForm() {
 
       <Reveal delay={0.1}>
         <div>
-          <label htmlFor="message" className="technical-text mb-2 block">
+          <label
+            htmlFor="message"
+            className="text-sm font-medium text-text mb-2 block uppercase tracking-wide"
+          >
             Details / Message
           </label>
           <textarea

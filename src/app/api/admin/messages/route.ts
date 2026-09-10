@@ -1,35 +1,14 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
-import { eq } from 'drizzle-orm'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const messages = await db.select().from(schema.contactMessages)
-  return NextResponse.json(messages)
-}
-
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { id } = await params
-
   try {
-    await db.delete(schema.contactMessages).where(eq(schema.contactMessages.id, parseInt(id)))
+    const { session, error } = await requireAuth()
+    if (error) return error
 
-    return NextResponse.json({ success: true })
+    const messages = await db.select().from(schema.contactMessages)
+    return apiSuccess(messages)
   } catch (error) {
-    console.error('Delete message error:', error)
-    return NextResponse.json({ error: 'Failed to delete message' }, { status: 500 })
+    return apiError('Failed to fetch messages', 500)
   }
 }

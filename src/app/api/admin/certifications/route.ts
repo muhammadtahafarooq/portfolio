@@ -1,44 +1,35 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { db, schema } from '@/lib/db'
-import { eq } from 'drizzle-orm'
+import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
+import { certificationSchema } from '@/lib/validators'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  const { session, error } = await requireAuth()
+  if (error) return error
 
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const certifications = await db.select().from(schema.certifications)
+    return apiSuccess(certifications)
+  } catch (error) {
+    return apiError('Failed to fetch certifications')
   }
-
-  const certifications = await db.select().from(schema.certifications)
-  return NextResponse.json(certifications)
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { session, error } = await requireAuth()
+  if (error) return error
 
   try {
     const body = await request.json()
+    const parsed = certificationSchema.safeParse(body)
 
-    const result = await db
-      .insert(schema.certifications)
-      .values({
-        name: body.name,
-        issuer: body.issuer || null,
-        date: body.date || null,
-        description: body.description || null,
-        sortOrder: body.sortOrder || 0,
-      } as typeof schema.certifications.$inferInsert)
-      .returning()
+    if (!parsed.success) {
+      return apiError('Validation failed', 400)
+    }
 
-    return NextResponse.json(result[0])
+    const result = await db.insert(schema.certifications).values(parsed.data).returning()
+
+    return apiSuccess(result[0], 201)
   } catch (error) {
-    console.error('Create certification error:', error)
-    return NextResponse.json({ error: 'Failed to create certification' }, { status: 500 })
+    return apiError('Failed to create certification')
   }
 }

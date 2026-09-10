@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, GripVertical } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Save } from 'lucide-react'
+import { PageHeader } from '@/components/admin/page-header'
+import { EmptyState } from '@/components/admin/empty-state'
+import { ConfirmDialog } from '@/components/admin/confirm-dialog'
+import { useToast } from '@/components/admin/toast'
 
 interface Certification {
   id: number
@@ -12,153 +16,243 @@ interface Certification {
   sortOrder: number
 }
 
-export default function AdminCertificationsPage() {
-  const [certifications, setCertifications] = useState<Certification[]>([])
+const emptyForm = { name: '', issuer: '', date: '', description: '', sortOrder: 0 }
+
+export default function CertificationsAdmin() {
+  const [items, setItems] = useState<Certification[]>([])
   const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState<Certification | null>(null)
-  const [form, setForm] = useState({
-    name: '',
-    issuer: '',
-    date: '',
-    description: '',
-    sortOrder: 0,
-  })
+  const [error, setError] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
-    fetchCertifications()
+    fetchItems()
   }, [])
 
-  async function fetchCertifications() {
-    const res = await fetch('/api/admin/certifications')
-    const data = await res.json()
-    setCertifications(data)
-    setLoading(false)
+  const fetchItems = async () => {
+    try {
+      const res = await fetch('/api/admin/certifications')
+      if (!res.ok) throw new Error()
+      const json = await res.json()
+      setItems(json.data)
+    } catch {
+      setError('Failed to load certifications')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const method = editing ? 'PUT' : 'POST'
-    const url = editing ? `/api/admin/certifications/${editing.id}` : '/api/admin/certifications'
-
-    await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-
-    setForm({ name: '', issuer: '', date: '', description: '', sortOrder: 0 })
-    setEditing(null)
-    fetchCertifications()
+  const handleCreate = async () => {
+    if (!form.name.trim()) {
+      toast('Name is required', 'error')
+      return
+    }
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/certifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error()
+      const json = await res.json()
+      setItems([...items, json.data])
+      setForm(emptyForm)
+      toast('Certification added')
+    } catch {
+      toast('Failed to create', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  async function handleDelete(id: number) {
-    if (!confirm('Delete this certification?')) return
-    await fetch(`/api/admin/certifications/${id}`, { method: 'DELETE' })
-    fetchCertifications()
+  const handleUpdate = async (id: number) => {
+    if (!form.name.trim()) {
+      toast('Name is required', 'error')
+      return
+    }
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/admin/certifications/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error()
+      const json = await res.json()
+      setItems(items.map((i) => (i.id === id ? json.data : i)))
+      setEditingId(null)
+      setForm(emptyForm)
+      toast('Certification updated')
+    } catch {
+      toast('Failed to update', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function handleEdit(cert: Certification) {
-    setEditing(cert)
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      const res = await fetch(`/api/admin/certifications/${deleteTarget}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      setItems(items.filter((i) => i.id !== deleteTarget))
+      toast('Certification deleted')
+    } catch {
+      toast('Failed to delete', 'error')
+    } finally {
+      setDeleteTarget(null)
+    }
+  }
+
+  const startEdit = (item: Certification) => {
+    setEditingId(item.id)
     setForm({
-      name: cert.name,
-      issuer: cert.issuer || '',
-      date: cert.date || '',
-      description: cert.description || '',
-      sortOrder: cert.sortOrder,
+      name: item.name,
+      issuer: item.issuer || '',
+      date: item.date || '',
+      description: item.description || '',
+      sortOrder: item.sortOrder,
     })
   }
 
-  if (loading) return <div className="p-6">Loading...</div>
+  if (loading)
+    return (
+      <div className="text-text-muted font-mono text-xs animate-pulse">
+        Loading certifications...
+      </div>
+    )
+  if (error) return <div className="text-error text-sm p-8 text-center">{error}</div>
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="heading-h2">Certifications</h1>
-      </div>
+    <div>
+      <PageHeader title="Certifications" description={`${items.length} certifications`} />
 
-      <form onSubmit={handleSubmit} className="card mb-8">
-        <h2 className="heading-h4 mb-4">{editing ? 'Edit Certification' : 'Add Certification'}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-surface border border-border-base p-6 mb-8">
+        <h3 className="text-sm font-medium text-text-primary mb-4">
+          {editingId ? 'Edit Certification' : 'Add Certification'}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <input
-            placeholder="Name"
+            type="text"
+            placeholder="Name *"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="input"
-            required
-          />
-          <input
-            placeholder="Issuer"
-            value={form.issuer}
-            onChange={(e) => setForm({ ...form, issuer: e.target.value })}
-            className="input"
+            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
           <input
             type="text"
-            placeholder="Date"
+            placeholder="Issuer"
+            value={form.issuer}
+            onChange={(e) => setForm({ ...form, issuer: e.target.value })}
+            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+          />
+          <input
+            type="text"
+            placeholder="Date (e.g., 2024)"
             value={form.date}
             onChange={(e) => setForm({ ...form, date: e.target.value })}
-            className="input"
+            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
           <input
             type="number"
-            placeholder="Sort Order"
+            placeholder="Sort order"
             value={form.sortOrder}
             onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-            className="input"
-          />
-          <textarea
-            placeholder="Description"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="input md:col-span-2"
-            rows={3}
+            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
         </div>
-        <div className="flex gap-2 mt-4">
-          <button type="submit" className="btn-primary">
-            {editing ? 'Update' : 'Add'}
+        <textarea
+          placeholder="Description"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors w-full min-h-[80px] mb-4"
+        />
+        <div className="flex gap-2">
+          <button
+            onClick={editingId ? () => handleUpdate(editingId) : handleCreate}
+            disabled={saving}
+            className="bg-primary text-background font-mono text-xs uppercase tracking-widest px-6 py-2 rounded-sm hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {saving ? (
+              'Saving...'
+            ) : editingId ? (
+              <>
+                <Save size={14} /> Save
+              </>
+            ) : (
+              <>
+                <Plus size={14} /> Add
+              </>
+            )}
           </button>
-          {editing && (
+          {editingId && (
             <button
-              type="button"
               onClick={() => {
-                setEditing(null)
-                setForm({ name: '', issuer: '', date: '', description: '', sortOrder: 0 })
+                setEditingId(null)
+                setForm(emptyForm)
               }}
-              className="btn-secondary"
+              className="text-text-muted text-xs border border-border-base px-4 py-2 rounded-sm hover:text-text-primary transition-colors flex items-center gap-2"
             >
-              Cancel
+              <X size={14} /> Cancel
             </button>
           )}
         </div>
-      </form>
+      </div>
 
-      <div className="space-y-4">
-        {certifications.map((cert) => (
-          <div key={cert.id} className="card flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <GripVertical className="text-text-muted" size={16} />
-              <div>
-                <h3 className="font-medium">{cert.name}</h3>
-                <p className="text-sm text-text-muted">
-                  {cert.issuer} {cert.date && `• ${cert.date}`}
+      {items.length === 0 ? (
+        <EmptyState
+          title="No certifications yet"
+          description="Add your first certification above"
+        />
+      ) : (
+        <div className="space-y-3">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="bg-surface border border-border-base p-4 flex items-start justify-between group hover:border-border-hover transition-colors"
+            >
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-text-primary">{item.name}</h4>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  {item.issuer}
+                  {item.issuer && item.date ? ' • ' : ''}
+                  {item.date}
                 </p>
+                {item.description && (
+                  <p className="text-xs text-text-muted mt-2 line-clamp-2">{item.description}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-4 shrink-0">
+                <button
+                  onClick={() => startEdit(item)}
+                  className="p-2 text-text-muted hover:text-primary transition-colors"
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(item.id)}
+                  className="p-2 text-text-muted hover:text-error transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
-            <div className="flex gap-2">
-              <button onClick={() => handleEdit(cert)} className="p-2 hover:bg-surface rounded">
-                <Pencil size={16} />
-              </button>
-              <button
-                onClick={() => handleDelete(cert.id)}
-                className="p-2 hover:bg-destructive/10 text-destructive rounded"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete Certification"
+        message="This action cannot be undone."
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+        variant="danger"
+      />
     </div>
   )
 }

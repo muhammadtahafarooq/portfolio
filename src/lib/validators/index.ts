@@ -98,6 +98,32 @@ export const socialLinkSchema = z.object({
   sortOrder: z.number().default(0),
 })
 
+export const technologySchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  iconUrl: z.string().url().optional().or(z.literal('')),
+  category: z.string().optional(),
+  sortOrder: z.number().default(0),
+})
+
+export const homepageContentSchema = z.object({
+  heroIntroduction: z.string().optional(),
+  featuredProjectIds: z.string().optional(),
+  contactStatement: z.string().optional(),
+})
+
+export const siteSettingsSchema = z.object({
+  siteTitle: z.string().optional(),
+  siteDescription: z.string().optional(),
+  analyticsEnabled: z.boolean().default(false),
+  animationIntensity: z.enum(['reduced', 'standard', 'enhanced']).default('standard'),
+  threeDEnabled: z.boolean().default(true),
+})
+
+export const resumeSchema = z.object({
+  content: z.string().optional(),
+  pdfUrl: z.string().url().optional().or(z.literal('')).nullable(),
+})
+
 export type ContactFormData = z.infer<typeof contactFormSchema>
 export type LoginData = z.infer<typeof loginSchema>
 export type ProjectData = z.infer<typeof projectSchema>
@@ -109,3 +135,7 @@ export type AchievementData = z.infer<typeof achievementSchema>
 export type ProfileData = z.infer<typeof profileSchema>
 export type AboutData = z.infer<typeof aboutSchema>
 export type SocialLinkData = z.infer<typeof socialLinkSchema>
+export type TechnologyData = z.infer<typeof technologySchema>
+export type HomepageContentData = z.infer<typeof homepageContentSchema>
+export type SiteSettingsData = z.infer<typeof siteSettingsSchema>
+export type ResumeData = z.infer<typeof resumeSchema>

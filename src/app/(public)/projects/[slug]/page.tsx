@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { getProjectBySlug, getProjects } from '@/lib/db/queries'
 import { Reveal } from '@/components/motion'
+import { SpaceBackground } from '@/components/public/space-background'
 
 export async function generateStaticParams() {
   const projects = await getProjects()
@@ -26,8 +27,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const project = await getProjectBySlug(params.slug)
   if (!project) return { title: 'Project Not Found' }
   return {
-    title: `${project.title} | Muhammad Taha`,
+    title: project.title,
     description: project.shortStatement,
+    alternates: {
+      canonical: `/projects/${project.slug}`,
+    },
     openGraph: {
       title: project.title,
       description: project.shortStatement,
@@ -50,6 +54,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
 
   return (
     <main className="min-h-screen">
+      <SpaceBackground />
       <section className="section-padding container-main">
         <Reveal>
           <Link
@@ -100,12 +105,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
       {screenshots.length > 0 && (
         <section className="container-main">
           <Reveal>
-            <div className="relative w-full aspect-[21/9] overflow-hidden">
+            <div className="relative w-full aspect-[21/9] overflow-hidden bg-background">
               <Image
                 src={screenshots[0]}
                 alt={project.title}
                 fill
-                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 80vw"
+                className="object-contain p-4"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
@@ -208,12 +214,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
             <div className="grid-12">
               <div className="col-span-12 md:col-span-7">
                 <Reveal delay={0.1}>
-                  <div className="relative aspect-[4/3] overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-background">
                     <Image
                       src={screenshots[1]}
                       alt={`${project.title} showcase 1`}
                       fill
-                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                      className="object-contain p-4"
                     />
                   </div>
                   <p className="font-technical-sm text-text-muted mt-4 uppercase tracking-[0.02em]">
@@ -223,12 +230,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
               </div>
               <div className="col-span-12 md:col-span-5 mt-8 md:mt-0">
                 <Reveal delay={0.2}>
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative aspect-square overflow-hidden bg-background">
                     <Image
                       src={screenshots[2] || screenshots[0]}
                       alt={`${project.title} showcase 2`}
                       fill
-                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      className="object-contain p-4"
                     />
                   </div>
                   <p className="font-technical-sm text-text-muted mt-4 uppercase tracking-[0.02em]">
@@ -324,12 +332,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
               <div className="col-span-12 md:col-span-5 mt-12 md:mt-0">
                 <Reveal delay={0.3}>
                   {screenshots.length > 0 && (
-                    <div className="relative aspect-square overflow-hidden border border-border-base">
+                    <div className="relative aspect-square overflow-hidden border border-border-base bg-background">
                       <Image
                         src={screenshots[0]}
                         alt={`${project.title} architecture`}
                         fill
-                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                        className="object-contain p-4"
                       />
                     </div>
                   )}
@@ -394,13 +403,14 @@ export default async function ProjectPage({ params }: { params: { slug: string }
           </Reveal>
           <Reveal delay={0.1}>
             <Link href={`/projects/${nextProject.slug}`} className="block group">
-              <div className="relative w-full aspect-[21/9] overflow-hidden">
+              <div className="relative w-full aspect-[21/9] overflow-hidden bg-background">
                 {nextProject.screenshotUrls ? (
                   <Image
                     src={JSON.parse(nextProject.screenshotUrls)[0]}
                     alt={nextProject.title}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 80vw"
+                    className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
                   <div className="w-full h-full bg-surface" />
