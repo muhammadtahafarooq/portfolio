@@ -1,6 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-
-export const runtime = 'edge'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import '@/styles/globals.css'
 

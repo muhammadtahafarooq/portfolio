@@ -35,6 +35,7 @@ local.db
 .wrangler
 .dev.vars
 .vercel/output
+.open-next
 
 # typescript
 *.tsbuildinfo
