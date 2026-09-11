@@ -31,7 +31,10 @@ export async function POST(request: Request) {
     const result = await uploadImage({ file, folder: sanitizedFolder })
 
     if (!result.success) {
-      return apiError(result.error || 'Failed to upload file', 500)
+      return Response.json(
+        { success: false, error: result.error || 'Failed to upload file', debug: result },
+        { status: 500 }
+      )
     }
 
     return apiSuccess({ url: result.url })

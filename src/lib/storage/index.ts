@@ -1,16 +1,28 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 
-const r2 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
-  },
-})
+let _r2: S3Client | null = null
 
-const BUCKET = process.env.R2_BUCKET_NAME || ''
-const PUBLIC_URL = process.env.R2_PUBLIC_URL || ''
+function getR2Client(): S3Client {
+  if (!_r2) {
+    _r2 = new S3Client({
+      region: 'auto',
+      endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+      },
+    })
+  }
+  return _r2
+}
+
+function getBucket(): string {
+  return process.env.R2_BUCKET_NAME || ''
+}
+
+function getPublicUrl(): string {
+  return process.env.R2_PUBLIC_URL || ''
+}
 
 interface UploadImageProps {
   file: File
@@ -40,35 +52,39 @@ export async function uploadImage({ file, folder = 'uploads' }: UploadImageProps
   const buffer = Buffer.from(await file.arrayBuffer())
 
   try {
+    const r2 = getR2Client()
     await r2.send(
       new PutObjectCommand({
-        Bucket: BUCKET,
+        Bucket: getBucket(),
         Key: filename,
         Body: buffer,
         ContentType: file.type,
       })
     )
 
-    const url = `${PUBLIC_URL}/${filename}`
+    const url = `${getPublicUrl()}/${filename}`
     return { url, success: true }
   } catch (error) {
-    console.error('Upload failed:', error)
-    return { success: false, error: 'Upload failed' }
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('R2 upload failed:', msg)
+    return { success: false, error: msg }
   }
 }
 
 export async function deleteImage(url: string) {
   try {
-    const key = url.replace(`${PUBLIC_URL}/`, '')
+    const key = url.replace(`${getPublicUrl()}/`, '')
+    const r2 = getR2Client()
     await r2.send(
       new DeleteObjectCommand({
-        Bucket: BUCKET,
+        Bucket: getBucket(),
         Key: key,
       })
     )
     return { success: true }
   } catch (error) {
-    console.error('Delete failed:', error)
-    return { success: false, error: 'Delete failed' }
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('R2 delete failed:', msg)
+    return { success: false, error: msg }
   }
 }
