@@ -8,7 +8,7 @@ export async function GET() {
   let dbOk = false
   try {
     const { getDb } = await import('@/lib/db')
-    const db = await getDb()
+    await getDb()
     dbOk = true
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
@@ -16,10 +16,8 @@ export async function GET() {
   }
 
   let authOk = false
-  let authOptionsRef: unknown = null
   try {
-    const mod = await import('@/lib/auth')
-    authOptionsRef = mod.authOptions
+    await import('@/lib/auth')
     authOk = true
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
@@ -28,14 +26,24 @@ export async function GET() {
 
   let nextAuthOk = false
   try {
-    const { default: NextAuth } = await import('next-auth')
-    const handler = NextAuth(authOptionsRef as Parameters<typeof NextAuth>[0])
+    const NextAuthModule = await import('next-auth')
+    const NextAuth = NextAuthModule.default
+    if (typeof NextAuth !== 'function') {
+      return NextResponse.json({
+        ok: false,
+        step: 'nextauth-type',
+        error: `NextAuth is ${typeof NextAuth}`,
+        hasSecret,
+        dbOk,
+        authOk,
+      })
+    }
     nextAuthOk = true
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     return NextResponse.json({
       ok: false,
-      step: 'nextauth-init',
+      step: 'nextauth-import',
       error: msg,
       hasSecret,
       dbOk,
