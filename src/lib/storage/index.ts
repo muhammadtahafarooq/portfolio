@@ -36,7 +36,7 @@ async function signRequest(
   const region = 'auto'
   const service = 's3'
 
-  const credentialScope = `${date}/${region}/${service}/aws4_request`
+  const credentialScope = `${date.slice(0, 8)}/${region}/${service}/aws4_request`
 
   // Canonical headers
   const canonicalHeaders = `host:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${date}\n`
@@ -45,7 +45,7 @@ async function signRequest(
   // Canonical request
   const canonicalRequest = [
     method,
-    `/${key}`,
+    `/${BUCKET()}/${key}`,
     '', // empty query string
     canonicalHeaders,
     signedHeaders,
@@ -144,7 +144,7 @@ export async function uploadImage({ file, folder = 'uploads' }: UploadImageProps
   const contentSha256 = await sha256Hex(buffer)
   const { authorization } = await signRequest('PUT', filename, file.type, date, contentSha256)
 
-  const res = await fetch(`https://${host}/${filename}`, {
+  const res = await fetch(`https://${host}/${BUCKET()}/${filename}`, {
     method: 'PUT',
     headers: {
       'Content-Type': file.type,
@@ -178,7 +178,7 @@ export async function deleteImage(url: string) {
 
   const { authorization } = await signRequest('DELETE', key, '', date, 'UNSIGNED-PAYLOAD')
 
-  const res = await fetch(`https://${host}/${key}`, {
+  const res = await fetch(`https://${host}/${BUCKET()}/${key}`, {
     method: 'DELETE',
     headers: {
       Host: host,
