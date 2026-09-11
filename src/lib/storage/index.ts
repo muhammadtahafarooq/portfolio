@@ -18,7 +18,7 @@ async function importKey(data: string): Promise<CryptoKey> {
   )
 }
 
-async function sha256Hex(data: ArrayBuffer | Uint8Array): Promise<string> {
+async function sha256Hex(data: ArrayBuffer): Promise<string> {
   const buf = await crypto.subtle.digest('SHA-256', data)
   return Array.from(new Uint8Array(buf))
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -53,18 +53,14 @@ async function signRequest(
   ].join('\n')
 
   // Hash canonical request
-  const canonicalRequestHash = await sha256Hex(new TextEncoder().encode(canonicalRequest))
+  const canonicalRequestHash = await sha256Hex(
+    new TextEncoder().encode(canonicalRequest).buffer as ArrayBuffer
+  )
 
   // String to sign
   const stringToSign = ['AWS4-HMAC-SHA256', date, credentialScope, canonicalRequestHash].join('\n')
 
   // Derive signing key
-  const kDate = await hmacSha256(await importKey(`AWS4${SECRET_KEY()}`), date)
-  const kRegion = await hmacSha256(await importKey(kDate as unknown as string), region)
-  // We need to pass ArrayBuffer keys, but hmacSha256 expects CryptoKey
-  // Let's use a different approach with raw ArrayBuffer manipulation
-
-  // Actually, we need to use importKey with raw ArrayBuffer data for HMAC chaining
   const secretKey = new TextEncoder().encode(`AWS4${SECRET_KEY()}`)
 
   const kDateKey = await crypto.subtle.importKey(
@@ -138,7 +134,12 @@ export async function uploadImage({ file, folder = 'uploads' }: UploadImageProps
   const filename = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
   const buffer = await file.arrayBuffer()
   const host = `${ACCOUNT_ID()}.r2.cloudflarestorage.com`
-  const date = new Date().toUTCString()
+  const now = new Date()
+  const date =
+    now
+      .toISOString()
+      .replace(/[:\-]|\.\d{3}/g, '')
+      .slice(0, 15) + 'Z'
 
   const contentSha256 = await sha256Hex(buffer)
   const { authorization } = await signRequest('PUT', filename, file.type, date, contentSha256)
@@ -168,7 +169,12 @@ export async function uploadImage({ file, folder = 'uploads' }: UploadImageProps
 export async function deleteImage(url: string) {
   const key = url.replace(`${PUBLIC_URL()}/`, '')
   const host = `${ACCOUNT_ID()}.r2.cloudflarestorage.com`
-  const date = new Date().toUTCString()
+  const now = new Date()
+  const date =
+    now
+      .toISOString()
+      .replace(/[:\-]|\.\d{3}/g, '')
+      .slice(0, 15) + 'Z'
 
   const { authorization } = await signRequest('DELETE', key, '', date, 'UNSIGNED-PAYLOAD')
 
