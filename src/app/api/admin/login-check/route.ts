@@ -1,29 +1,27 @@
 import { NextResponse } from 'next/server'
-import { isRateLimited, getRemainingTime } from '@/lib/rate-limit'
-
-export async function POST(request: Request) {
-  const forwarded = request.headers.get('x-forwarded-for')
-  const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
-
-  if (isRateLimited(ip)) {
-    const remaining = Math.ceil(getRemainingTime(ip) / 60000)
-    return NextResponse.json(
-      { error: `Too many login attempts. Try again in ${remaining} minutes.` },
-      { status: 429 }
-    )
-  }
-
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
-}
 
 export async function GET() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
+  try {
+    const envCheck = {
+      hasDbUrl: !!process.env.TURSO_DATABASE_URL,
+      hasNextAuth: !!process.env.NEXTAUTH_SECRET,
+      nodeEnv: process.env.NODE_ENV,
+      hasSchema: true,
+    }
+
+    const { getDb } = await import('@/lib/db')
+    const db = await getDb()
+    envCheck.hasSchema = true
+
+    return NextResponse.json({ success: true, envCheck })
+  } catch (err: any) {
+    return NextResponse.json(
+      { success: false, error: err.message, stack: err.stack },
+      { status: 500 }
+    )
+  }
 }
 
-export async function PUT() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
-}
-
-export async function DELETE() {
+export async function POST() {
   return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
 }

@@ -23,7 +23,12 @@ async function createDb(): Promise<DbInstance> {
 
 export async function getDb(): Promise<DbInstance> {
   if (!_db) {
-    _db = await createDb()
+    try {
+      _db = await createDb()
+    } catch (err) {
+      console.error('Failed to initialize database:', err)
+      throw err
+    }
   }
   return _db
 }

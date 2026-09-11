@@ -3,116 +3,142 @@ import { getDb, schema } from './index'
 
 const dbAvailable = !!process.env.TURSO_DATABASE_URL
 
+async function safeQuery<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  if (!dbAvailable) return fallback
+  try {
+    return await fn()
+  } catch (err) {
+    console.error('Database query failed:', err)
+    return fallback
+  }
+}
+
 export async function getProfile() {
-  if (!dbAvailable) return null
-  const db = await getDb()
-  const result = await db.select().from(schema.profile).limit(1)
-  return result[0] || null
+  return safeQuery(async () => {
+    const db = await getDb()
+    const result = await db.select().from(schema.profile).limit(1)
+    return result[0] || null
+  }, null)
 }
 
 export async function getAbout() {
-  if (!dbAvailable) return null
-  const db = await getDb()
-  const result = await db.select().from(schema.about).limit(1)
-  return result[0] || null
+  return safeQuery(async () => {
+    const db = await getDb()
+    const result = await db.select().from(schema.about).limit(1)
+    return result[0] || null
+  }, null)
 }
 
 export async function getSkills() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.skills).orderBy(asc(schema.skills.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.skills).orderBy(asc(schema.skills.sortOrder))
+  }, [])
 }
 
 export async function getTechnologies() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.technologies).orderBy(asc(schema.technologies.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.technologies).orderBy(asc(schema.technologies.sortOrder))
+  }, [])
 }
 
 export async function getProjects() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.projects).orderBy(asc(schema.projects.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.projects).orderBy(asc(schema.projects.sortOrder))
+  }, [])
 }
 
 export async function getFeaturedProjects() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db
-    .select()
-    .from(schema.projects)
-    .where(eq(schema.projects.isFeatured, true))
-    .orderBy(asc(schema.projects.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db
+      .select()
+      .from(schema.projects)
+      .where(eq(schema.projects.isFeatured, true))
+      .orderBy(asc(schema.projects.sortOrder))
+  }, [])
 }
 
 export async function getProjectBySlug(slug: string) {
-  if (!dbAvailable) return null
-  const db = await getDb()
-  const result = await db
-    .select()
-    .from(schema.projects)
-    .where(eq(schema.projects.slug, slug))
-    .limit(1)
-  return result[0] || null
+  return safeQuery(async () => {
+    const db = await getDb()
+    const result = await db
+      .select()
+      .from(schema.projects)
+      .where(eq(schema.projects.slug, slug))
+      .limit(1)
+    return result[0] || null
+  }, null)
 }
 
 export async function getExperience() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.experience).orderBy(asc(schema.experience.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.experience).orderBy(asc(schema.experience.sortOrder))
+  }, [])
 }
 
 export async function getEducation() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.education).orderBy(asc(schema.education.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.education).orderBy(asc(schema.education.sortOrder))
+  }, [])
 }
 
 export async function getCertifications() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.certifications).orderBy(asc(schema.certifications.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.certifications).orderBy(asc(schema.certifications.sortOrder))
+  }, [])
 }
 
 export async function getAchievements() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.achievements).orderBy(asc(schema.achievements.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.achievements).orderBy(asc(schema.achievements.sortOrder))
+  }, [])
 }
 
 export async function getResume() {
-  if (!dbAvailable) return null
-  const db = await getDb()
-  const result = await db.select().from(schema.resume).limit(1)
-  return result[0] || null
+  return safeQuery(async () => {
+    const db = await getDb()
+    const result = await db.select().from(schema.resume).limit(1)
+    return result[0] || null
+  }, null)
 }
 
 export async function getSocialLinks() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db
-    .select()
-    .from(schema.socialLinks)
-    .where(eq(schema.socialLinks.isVisible, true))
-    .orderBy(asc(schema.socialLinks.sortOrder))
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db
+      .select()
+      .from(schema.socialLinks)
+      .where(eq(schema.socialLinks.isVisible, true))
+      .orderBy(asc(schema.socialLinks.sortOrder))
+  }, [])
 }
 
 export async function getHomepageContent() {
-  if (!dbAvailable) return null
-  const db = await getDb()
-  const result = await db.select().from(schema.homepageContent).limit(1)
-  return result[0] || null
+  return safeQuery(async () => {
+    const db = await getDb()
+    const result = await db.select().from(schema.homepageContent).limit(1)
+    return result[0] || null
+  }, null)
 }
 
 export async function getSiteSettings() {
-  if (!dbAvailable) return null
-  const db = await getDb()
-  const result = await db.select().from(schema.siteSettings).limit(1)
-  return result[0] || null
+  return safeQuery(async () => {
+    const db = await getDb()
+    const result = await db.select().from(schema.siteSettings).limit(1)
+    return result[0] || null
+  }, null)
 }
 
 export async function getContactMessages() {
-  if (!dbAvailable) return []
-  const db = await getDb()
-  return db.select().from(schema.contactMessages)
+  return safeQuery(async () => {
+    const db = await getDb()
+    return db.select().from(schema.contactMessages)
+  }, [])
 }
