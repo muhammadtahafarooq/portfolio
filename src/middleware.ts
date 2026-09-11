@@ -4,13 +4,7 @@ import { jwtVerify } from 'jose'
 const SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
 const COOKIE_NAME = 'admin-session'
 
-const publicAdminPaths = [
-  '/admin/login',
-  '/admin/forgot-password',
-  '/admin/reset-password',
-  '/api/admin/login-check',
-  '/api/admin/debug-login',
-]
+const publicAdminPaths = ['/admin/login', '/admin/forgot-password', '/admin/reset-password']
 
 const securityHeaders: Record<string, string> = {
   'X-Frame-Options': 'DENY',
