@@ -1,26 +1,17 @@
 import { NextResponse } from 'next/server'
 import { isRateLimited, getRemainingTime } from '@/lib/rate-limit'
 
-let cachedHandler: ((request: Request, context?: unknown) => Promise<Response>) | null = null
-
-async function getHandler() {
-  if (cachedHandler) return cachedHandler
-  const { default: NextAuth } = await import('next-auth')
-  const { authOptions } = await import('@/lib/auth')
-  cachedHandler = NextAuth(authOptions) as (
-    request: Request,
-    context?: unknown
-  ) => Promise<Response>
-  return cachedHandler
-}
-
 export async function GET(request: Request) {
   try {
-    const handler = await getHandler()
-    return await handler(request)
+    const { default: NextAuth } = await import('next-auth')
+    const { authOptions } = await import('@/lib/auth')
+    const handler = NextAuth(authOptions)
+    return await handler(request, new Response())
   } catch (err) {
-    console.error('NextAuth GET error:', err)
-    return NextResponse.json({ error: 'Auth error' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    const stack = err instanceof Error ? err.stack : ''
+    console.error('NextAuth GET error:', msg, stack)
+    return NextResponse.json({ error: msg, stack: stack?.substring(0, 500) }, { status: 500 })
   }
 }
 
@@ -37,10 +28,14 @@ export async function POST(request: Request) {
       )
     }
 
-    const handler = await getHandler()
-    return await handler(request)
+    const { default: NextAuth } = await import('next-auth')
+    const { authOptions } = await import('@/lib/auth')
+    const handler = NextAuth(authOptions)
+    return await handler(request, new Response())
   } catch (err) {
-    console.error('NextAuth POST error:', err)
-    return NextResponse.json({ error: 'Auth error' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    const stack = err instanceof Error ? err.stack : ''
+    console.error('NextAuth POST error:', msg, stack)
+    return NextResponse.json({ error: msg, stack: stack?.substring(0, 500) }, { status: 500 })
   }
 }
