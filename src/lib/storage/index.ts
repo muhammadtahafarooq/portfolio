@@ -1,27 +1,33 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+const BUCKET = () => process.env.R2_BUCKET_NAME || ''
+const PUBLIC_URL = () => process.env.R2_PUBLIC_URL || ''
+const ACCOUNT_ID = () => process.env.CLOUDFLARE_ACCOUNT_ID || ''
+const ACCESS_KEY = () => process.env.R2_ACCESS_KEY_ID || ''
+const SECRET_KEY = () => process.env.R2_SECRET_ACCESS_KEY || ''
 
-let _r2: S3Client | null = null
-
-function getR2Client(): S3Client {
-  if (!_r2) {
-    _r2 = new S3Client({
-      region: 'auto',
-      endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-      credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
-      },
-    })
-  }
-  return _r2
+function hmacSha256(key: CryptoKey, data: string): Promise<ArrayBuffer> {
+  return crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data))
 }
 
-function getBucket(): string {
-  return process.env.R2_BUCKET_NAME || ''
-}
-
-function getPublicUrl(): string {
-  return process.env.R2_PUBLIC_URL || ''
+async function signRequest(
+  method: string,
+  path: string,
+  contentType: string,
+  date: string
+): Promise<string> {
+  const stringToSign = `${method}\n\n${contentType}\n${date}\n${path}`
+  const keyData = new TextEncoder().encode(SECRET_KEY())
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const signature = await hmacSha256(key, stringToSign)
+  const signatureHex = Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+  return `AWS4-HMAC-SHA256 Credential=${ACCESS_KEY()}/$(date)/auto/s3/aws4_request, SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date, Signature=${signatureHex}`
 }
 
 interface UploadImageProps {
@@ -41,50 +47,70 @@ export async function uploadImage({ file, folder = 'uploads' }: UploadImageProps
   const maxSize = 5 * 1024 * 1024
 
   if (!allowedTypes.includes(file.type)) {
-    throw new Error('Invalid file type. Only JPEG, PNG, WebP, and AVIF are allowed.')
+    throw new Error('Invalid file type.')
   }
-
   if (file.size > maxSize) {
     throw new Error('File size exceeds 5MB limit.')
   }
 
   const filename = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-  const buffer = Buffer.from(await file.arrayBuffer())
+  const buffer = await file.arrayBuffer()
+  const host = `${ACCOUNT_ID()}.r2.cloudflarestorage.com`
+  const path = `/${BUCKET()}/${filename}`
+  const date = new Date().toUTCString()
+  const contentSha256 = await crypto.subtle.digest('SHA-256', buffer).then((buf) =>
+    Array.from(new Uint8Array(buf))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+  )
 
-  try {
-    const r2 = getR2Client()
-    await r2.send(
-      new PutObjectCommand({
-        Bucket: getBucket(),
-        Key: filename,
-        Body: buffer,
-        ContentType: file.type,
-      })
-    )
+  const auth = await signRequest('PUT', path, file.type, date)
 
-    const url = `${getPublicUrl()}/${filename}`
-    return { url, success: true }
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error)
-    console.error('R2 upload failed:', msg)
-    return { success: false, error: msg }
+  const res = await fetch(`https://${host}${path}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': file.type,
+      Host: host,
+      'x-amz-date': date,
+      'x-amz-content-sha256': contentSha256,
+      Authorization: auth,
+    },
+    body: buffer,
+  })
+
+  if (!res.ok) {
+    const errText = await res.text()
+    console.error('R2 PUT failed:', res.status, errText)
+    return { success: false, error: `R2 error ${res.status}: ${errText.slice(0, 200)}` }
   }
+
+  const url = `${PUBLIC_URL()}/${filename}`
+  return { url, success: true }
 }
 
 export async function deleteImage(url: string) {
-  try {
-    const key = url.replace(`${getPublicUrl()}/`, '')
-    const r2 = getR2Client()
-    await r2.send(
-      new DeleteObjectCommand({
-        Bucket: getBucket(),
-        Key: key,
-      })
-    )
-    return { success: true }
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error)
-    console.error('R2 delete failed:', msg)
-    return { success: false, error: msg }
+  const key = url.replace(`${PUBLIC_URL()}/`, '')
+  const host = `${ACCOUNT_ID()}.r2.cloudflarestorage.com`
+  const path = `/${BUCKET()}/${key}`
+  const date = new Date().toUTCString()
+
+  const auth = await signRequest('DELETE', path, '', date)
+
+  const res = await fetch(`https://${host}${path}`, {
+    method: 'DELETE',
+    headers: {
+      Host: host,
+      'x-amz-date': date,
+      'x-amz-content-sha256': 'UNSIGNED-PAYLOAD',
+      Authorization: auth,
+    },
+  })
+
+  if (!res.ok) {
+    const errText = await res.text()
+    console.error('R2 DELETE failed:', res.status, errText)
+    return { success: false, error: `R2 error ${res.status}` }
   }
+
+  return { success: true }
 }
