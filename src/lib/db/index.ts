@@ -2,36 +2,47 @@ import { createClient } from '@libsql/client'
 import { drizzle } from 'drizzle-orm/libsql'
 import * as schema from './schema'
 
-let _db: ReturnType<typeof drizzle<typeof schema>> | null = null
+type DbInstance = ReturnType<typeof drizzle<typeof schema>>
 
-function getDb() {
-  if (_db) return _db
+let _db: DbInstance | null = null
 
+function createDb(): DbInstance {
   const url = process.env.TURSO_DATABASE_URL
   if (!url) {
     throw new Error('TURSO_DATABASE_URL is not set')
   }
-
   const client = createClient({
     url,
     authToken: process.env.TURSO_AUTH_TOKEN,
   })
+  return drizzle(client, { schema })
+}
 
-  _db = drizzle(client, { schema })
+function getDb(): DbInstance {
+  if (!_db) {
+    _db = createDb()
+  }
   return _db
 }
 
-export function getDbInstance() {
-  return getDb()
+function isBuildTime(): boolean {
+  return !process.env.TURSO_DATABASE_URL
 }
 
-export const db = new Proxy(
-  {},
-  {
+function createBuildProxy(): DbInstance {
+  const noop = () => Promise.resolve([])
+  const buildDb = new Proxy({} as any, {
     get(_, prop) {
-      return (getDb() as any)[prop]
+      if (typeof prop === 'symbol') return undefined
+      if (prop === 'select')
+        return () => ({ from: () => ({ orderBy: () => ({ limit: () => ({ then: noop }) }) }) })
+      if (prop === 'query') return new Proxy({}, { get: () => noop })
+      return noop
     },
-  }
-) as ReturnType<typeof drizzle<typeof schema>>
+  })
+  return buildDb as DbInstance
+}
+
+export const db: DbInstance = isBuildTime() ? createBuildProxy() : getDb()
 
 export { schema }
