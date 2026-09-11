@@ -1,7 +1,5 @@
 export const dynamic = 'force-dynamic'
 
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { Sidebar } from '@/components/admin/sidebar'
 import { ToastProvider } from '@/components/admin/toast'
 
@@ -13,7 +11,14 @@ export const metadata = {
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions)
+  let session = null
+  try {
+    const { getServerSession } = await import('next-auth')
+    const { authOptions } = await import('@/lib/auth')
+    session = await getServerSession(authOptions)
+  } catch (err) {
+    console.error('Admin session check failed:', err)
+  }
 
   if (!session) {
     return (
