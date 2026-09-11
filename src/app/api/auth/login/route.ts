@@ -1,22 +1,22 @@
-import { cookies } from 'next/headers'
-import { SESSION_CONFIG } from '@/lib/auth/session'
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   const steps: string[] = []
 
   try {
     steps.push('parsing body')
-    const { email, password } = await request.json()
+    const body = await request.json()
+    const email = body?.email as string
+    const password = body?.password as string
     steps.push(`email=${email}`)
 
-    steps.push('importing bcryptjs')
+    steps.push('importing modules')
     const bcrypt = await import('bcryptjs')
-    steps.push('bcryptjs ok')
-
-    steps.push('importing db')
     const { getDb, schema } = await import('@/lib/db')
     const { eq } = await import('drizzle-orm')
-    steps.push('db imported')
+    const { cookies } = await import('next/headers')
+    const { jwtSign, SESSION_CONFIG } = await import('@/lib/auth/session')
+    steps.push('modules imported')
 
     steps.push('connecting db')
     const db = await getDb()
@@ -44,7 +44,6 @@ export async function POST(request: Request) {
     }
 
     steps.push('signing jwt')
-    const { jwtSign } = await import('@/lib/auth/session')
     const token = await jwtSign({ id: String(user.id), email: user.email, name: 'Muhammad Taha' })
     steps.push('jwt signed')
 
@@ -62,7 +61,7 @@ export async function POST(request: Request) {
     return Response.json({ success: true, steps })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    console.error('Login error:', err)
+    console.error('Login error:', msg, steps)
     return Response.json({ error: msg, steps }, { status: 500 })
   }
 }
