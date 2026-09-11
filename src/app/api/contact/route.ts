@@ -1,13 +1,14 @@
 import { eq } from 'drizzle-orm'
 import { contactFormSchema } from '@/lib/validators'
 import { sendContactAdminEmail, sendContactAcknowledgment, sendWelcomeEmail } from '@/lib/email'
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { apiError, apiSuccess } from '@/lib/api-helpers'
 
 const rateLimit = new Map<string, number>()
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000
 
 export async function POST(request: Request) {
+  const db = await getDb()
   try {
     const body = await request.json()
 

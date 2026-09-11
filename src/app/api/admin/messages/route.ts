@@ -1,7 +1,8 @@
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
 
 export async function GET() {
+  const db = await getDb()
   try {
     const { session, error } = await requireAuth()
     if (error) return error

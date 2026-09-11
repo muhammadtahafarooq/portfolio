@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import crypto from 'crypto'
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { sendPasswordResetEmail } from '@/lib/email'
 import { apiError, apiSuccess } from '@/lib/api-helpers'
 import { isRateLimited, getRemainingTime } from '@/lib/rate-limit'
@@ -16,6 +16,7 @@ function getExpiresAt(): string {
 }
 
 export async function POST(request: Request) {
+  const db = await getDb()
   try {
     const forwarded = request.headers.get('x-forwarded-for')
     const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'

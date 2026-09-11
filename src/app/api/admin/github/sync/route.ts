@@ -1,8 +1,9 @@
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 import { requireAuth, apiSuccess, apiError } from '@/lib/api-helpers'
 
 export async function POST() {
+  const db = await getDb()
   const { session, error } = await requireAuth()
   if (error) return error
 

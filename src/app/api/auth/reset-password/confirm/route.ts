@@ -1,9 +1,10 @@
 import { eq, and } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { apiError, apiSuccess } from '@/lib/api-helpers'
 
 export async function POST(request: Request) {
+  const db = await getDb()
   try {
     const body = await request.json()
     const { token, password } = body

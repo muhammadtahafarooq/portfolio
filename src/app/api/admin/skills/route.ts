@@ -1,8 +1,9 @@
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
 import { skillSchema } from '@/lib/validators'
 
 export async function GET() {
+  const db = await getDb()
   const { session, error } = await requireAuth()
   if (error) return error
 
@@ -15,6 +16,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const db = await getDb()
   const { session, error } = await requireAuth()
   if (error) return error
 

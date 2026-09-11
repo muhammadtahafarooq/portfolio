@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Privacy Policy',
   description: 'Privacy Policy for Muhammad Taha Portfolio',

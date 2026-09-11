@@ -1,9 +1,10 @@
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
 import { aboutSchema } from '@/lib/validators'
 
 export async function GET() {
+  const db = await getDb()
   try {
     const { session, error } = await requireAuth()
     if (error) return error
@@ -16,6 +17,7 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  const db = await getDb()
   try {
     const { session, error } = await requireAuth()
     if (error) return error

@@ -1,9 +1,10 @@
-import { db, schema } from '@/lib/db'
+import { getDb, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 import { requireAuth, apiError, apiSuccess, validateId, invalidIdResponse } from '@/lib/api-helpers'
 import { achievementSchema } from '@/lib/validators'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const db = await getDb()
   const { session, error } = await requireAuth()
   if (error) return error
 
@@ -29,6 +30,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const db = await getDb()
   const { session, error } = await requireAuth()
   if (error) return error
 
@@ -61,6 +63,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const db = await getDb()
   const { session, error } = await requireAuth()
   if (error) return error
 
