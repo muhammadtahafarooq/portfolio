@@ -1,8 +1,7 @@
 export const dynamic = 'force-dynamic'
 
-import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
-import { authOptions } from '@/lib/auth'
+import { getSession } from '@/lib/auth/session'
 import Link from 'next/link'
 import {
   getProjects,
@@ -16,7 +15,7 @@ import {
 export const metadata = { title: 'Dashboard' }
 
 export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions)
+  const session = await getSession()
   if (!session) redirect('/admin/login')
 
   const [projects, messages, skills, experience, certifications, technologies] = await Promise.all([
@@ -67,9 +66,7 @@ export default async function AdminDashboard() {
         >
           Dashboard
         </h2>
-        <p className="text-sm text-text-secondary mt-2">
-          Welcome back, {session.user?.name || 'Admin'}
-        </p>
+        <p className="text-sm text-text-secondary mt-2">Welcome back, {session.name || 'Admin'}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">

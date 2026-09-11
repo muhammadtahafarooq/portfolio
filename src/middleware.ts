@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { jwtVerify } from 'jose'
+
+const SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+const COOKIE_NAME = 'admin-session'
 
 const publicAdminPaths = [
   '/admin/login',
@@ -36,15 +39,27 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+    const token = req.cookies.get(COOKIE_NAME)?.value
 
-    if ((path.startsWith('/admin') || path.startsWith('/api/admin')) && !token) {
-      const loginUrl = new URL('/admin/login', req.url)
-      loginUrl.searchParams.set('callbackUrl', req.url)
-      return NextResponse.redirect(loginUrl)
+    if (path.startsWith('/admin') || path.startsWith('/api/admin')) {
+      if (!token) {
+        const loginUrl = new URL('/admin/login', req.url)
+        loginUrl.searchParams.set('callbackUrl', req.url)
+        return NextResponse.redirect(loginUrl)
+      }
+
+      const { payload } = await jwtVerify(token, SECRET)
+      if (!payload || !payload.email) {
+        const loginUrl = new URL('/admin/login', req.url)
+        return NextResponse.redirect(loginUrl)
+      }
     }
   } catch (err) {
     console.error('Middleware auth error:', err)
+    if (path.startsWith('/admin') || path.startsWith('/api/admin')) {
+      const loginUrl = new URL('/admin/login', req.url)
+      return NextResponse.redirect(loginUrl)
+    }
   }
 
   return response

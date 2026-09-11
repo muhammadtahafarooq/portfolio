@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSession } from '@/lib/auth/session'
 
 export function apiError(message: string, status: number = 500) {
   return NextResponse.json({ success: false, error: message }, { status })
@@ -11,7 +10,7 @@ export function apiSuccess<T>(data: T, status: number = 200) {
 }
 
 export async function requireAuth() {
-  const session = await getServerSession(authOptions)
+  const session = await getSession()
   if (!session) {
     return { session: null, error: apiError('Unauthorized', 401) }
   }

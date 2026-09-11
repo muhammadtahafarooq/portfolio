@@ -17,41 +17,14 @@ export async function GET() {
 
   let authOk = false
   try {
-    await import('@/lib/auth')
+    await import('@/lib/auth/session')
     authOk = true
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     return NextResponse.json({ ok: false, step: 'auth-import', error: msg, hasSecret, dbOk })
   }
 
-  let nextAuthOk = false
-  try {
-    const NextAuthModule = await import('next-auth')
-    const NextAuth = NextAuthModule.default
-    if (typeof NextAuth !== 'function') {
-      return NextResponse.json({
-        ok: false,
-        step: 'nextauth-type',
-        error: `NextAuth is ${typeof NextAuth}`,
-        hasSecret,
-        dbOk,
-        authOk,
-      })
-    }
-    nextAuthOk = true
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({
-      ok: false,
-      step: 'nextauth-import',
-      error: msg,
-      hasSecret,
-      dbOk,
-      authOk,
-    })
-  }
-
-  return NextResponse.json({ ok: true, hasSecret, dbOk, authOk, nextAuthOk })
+  return NextResponse.json({ ok: true, hasSecret, dbOk, authOk })
 }
 
 export async function POST() {
