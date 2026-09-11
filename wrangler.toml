@@ -1,13 +1,4 @@
 name = "taha-portfolio"
-main = ".open-next/worker.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next"
-
-assets = { directory = ".open-next/assets", binding = "ASSET_BINDING" }
-
-services = [
-  { binding = "WORKER_SELF_REFERENCE", service = "taha-portfolio" },
-]
-
-# Environment variables are configured in the Cloudflare dashboard.
