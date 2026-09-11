@@ -4,30 +4,112 @@ const ACCOUNT_ID = () => process.env.CLOUDFLARE_ACCOUNT_ID || ''
 const ACCESS_KEY = () => process.env.R2_ACCESS_KEY_ID || ''
 const SECRET_KEY = () => process.env.R2_SECRET_ACCESS_KEY || ''
 
-function hmacSha256(key: CryptoKey, data: string): Promise<ArrayBuffer> {
+async function hmacSha256(key: CryptoKey, data: string): Promise<ArrayBuffer> {
   return crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data))
 }
 
-async function signRequest(
-  method: string,
-  path: string,
-  contentType: string,
-  date: string
-): Promise<string> {
-  const stringToSign = `${method}\n\n${contentType}\n${date}\n${path}`
-  const keyData = new TextEncoder().encode(SECRET_KEY())
-  const key = await crypto.subtle.importKey(
+async function importKey(data: string): Promise<CryptoKey> {
+  return crypto.subtle.importKey(
     'raw',
-    keyData,
+    new TextEncoder().encode(data),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
   )
-  const signature = await hmacSha256(key, stringToSign)
+}
+
+async function sha256Hex(data: ArrayBuffer | Uint8Array): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+async function signRequest(
+  method: string,
+  key: string,
+  contentType: string,
+  date: string,
+  payloadHash: string
+): Promise<{ authorization: string; payloadHash: string }> {
+  const host = `${ACCOUNT_ID()}.r2.cloudflarestorage.com`
+  const region = 'auto'
+  const service = 's3'
+
+  const credentialScope = `${date}/${region}/${service}/aws4_request`
+
+  // Canonical headers
+  const canonicalHeaders = `host:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${date}\n`
+  const signedHeaders = 'host;x-amz-content-sha256;x-amz-date'
+
+  // Canonical request
+  const canonicalRequest = [
+    method,
+    `/${key}`,
+    '', // empty query string
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash,
+  ].join('\n')
+
+  // Hash canonical request
+  const canonicalRequestHash = await sha256Hex(new TextEncoder().encode(canonicalRequest))
+
+  // String to sign
+  const stringToSign = ['AWS4-HMAC-SHA256', date, credentialScope, canonicalRequestHash].join('\n')
+
+  // Derive signing key
+  const kDate = await hmacSha256(await importKey(`AWS4${SECRET_KEY()}`), date)
+  const kRegion = await hmacSha256(await importKey(kDate as unknown as string), region)
+  // We need to pass ArrayBuffer keys, but hmacSha256 expects CryptoKey
+  // Let's use a different approach with raw ArrayBuffer manipulation
+
+  // Actually, we need to use importKey with raw ArrayBuffer data for HMAC chaining
+  const secretKey = new TextEncoder().encode(`AWS4${SECRET_KEY()}`)
+
+  const kDateKey = await crypto.subtle.importKey(
+    'raw',
+    secretKey,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const kDateSig = await hmacSha256(kDateKey, date)
+
+  const kRegionKey = await crypto.subtle.importKey(
+    'raw',
+    new Uint8Array(kDateSig),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const kRegionSig = await hmacSha256(kRegionKey, region)
+
+  const kServiceKey = await crypto.subtle.importKey(
+    'raw',
+    new Uint8Array(kRegionSig),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const kServiceSig = await hmacSha256(kServiceKey, service)
+
+  const kSigningKey = await crypto.subtle.importKey(
+    'raw',
+    new Uint8Array(kServiceSig),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const signature = await hmacSha256(kSigningKey, stringToSign)
+
   const signatureHex = Array.from(new Uint8Array(signature))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
-  return `AWS4-HMAC-SHA256 Credential=${ACCESS_KEY()}/$(date)/auto/s3/aws4_request, SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date, Signature=${signatureHex}`
+
+  const authorization = `AWS4-HMAC-SHA256 Credential=${ACCESS_KEY()}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signatureHex}`
+
+  return { authorization, payloadHash }
 }
 
 interface UploadImageProps {
@@ -56,24 +138,19 @@ export async function uploadImage({ file, folder = 'uploads' }: UploadImageProps
   const filename = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
   const buffer = await file.arrayBuffer()
   const host = `${ACCOUNT_ID()}.r2.cloudflarestorage.com`
-  const path = `/${BUCKET()}/${filename}`
   const date = new Date().toUTCString()
-  const contentSha256 = await crypto.subtle.digest('SHA-256', buffer).then((buf) =>
-    Array.from(new Uint8Array(buf))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')
-  )
 
-  const auth = await signRequest('PUT', path, file.type, date)
+  const contentSha256 = await sha256Hex(buffer)
+  const { authorization } = await signRequest('PUT', filename, file.type, date, contentSha256)
 
-  const res = await fetch(`https://${host}${path}`, {
+  const res = await fetch(`https://${host}/${filename}`, {
     method: 'PUT',
     headers: {
       'Content-Type': file.type,
       Host: host,
       'x-amz-date': date,
       'x-amz-content-sha256': contentSha256,
-      Authorization: auth,
+      Authorization: authorization,
     },
     body: buffer,
   })
@@ -91,18 +168,17 @@ export async function uploadImage({ file, folder = 'uploads' }: UploadImageProps
 export async function deleteImage(url: string) {
   const key = url.replace(`${PUBLIC_URL()}/`, '')
   const host = `${ACCOUNT_ID()}.r2.cloudflarestorage.com`
-  const path = `/${BUCKET()}/${key}`
   const date = new Date().toUTCString()
 
-  const auth = await signRequest('DELETE', path, '', date)
+  const { authorization } = await signRequest('DELETE', key, '', date, 'UNSIGNED-PAYLOAD')
 
-  const res = await fetch(`https://${host}${path}`, {
+  const res = await fetch(`https://${host}/${key}`, {
     method: 'DELETE',
     headers: {
       Host: host,
       'x-amz-date': date,
       'x-amz-content-sha256': 'UNSIGNED-PAYLOAD',
-      Authorization: auth,
+      Authorization: authorization,
     },
   })
 
