@@ -9,6 +9,7 @@ const publicAdminPaths = [
   '/admin/forgot-password',
   '/admin/reset-password',
   '/api/admin/login-check',
+  '/api/admin/debug-login',
 ]
 
 const securityHeaders: Record<string, string> = {
