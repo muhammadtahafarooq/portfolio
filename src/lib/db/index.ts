@@ -1,8 +1,11 @@
+import type { LibSQLDatabase } from 'drizzle-orm/libsql'
 import * as schema from './schema'
 
-let _db: any = null
+type DbInstance = LibSQLDatabase<typeof schema>
 
-async function createDb(): Promise<any> {
+let _db: DbInstance | null = null
+
+async function createDb(): Promise<DbInstance> {
   const [{ createClient }, { drizzle }] = await Promise.all([
     import('@libsql/client'),
     import('drizzle-orm/libsql'),
@@ -18,7 +21,7 @@ async function createDb(): Promise<any> {
   return drizzle(client, { schema })
 }
 
-export async function getDb(): Promise<any> {
+export async function getDb(): Promise<DbInstance> {
   if (!_db) {
     _db = await createDb()
   }
