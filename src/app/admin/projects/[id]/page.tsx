@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useToast } from '@/components/admin/toast'
+import { ImageMultiUpload } from '@/components/admin/image-upload'
 
 export default function EditProject() {
   const router = useRouter()
@@ -20,7 +21,7 @@ export default function EditProject() {
     liveUrl: '',
     githubUrl: '',
     demoUrl: '',
-    screenshotUrls: '',
+    screenshotUrls: [] as string[],
     caseStudyProblem: '',
     caseStudySolution: '',
     caseStudyResult: '',
@@ -60,12 +61,12 @@ export default function EditProject() {
           screenshotUrls: p.screenshotUrls
             ? (() => {
                 try {
-                  return JSON.parse(p.screenshotUrls).join(', ')
+                  return JSON.parse(p.screenshotUrls)
                 } catch {
-                  return ''
+                  return []
                 }
               })()
-            : '',
+            : [],
           caseStudyProblem: p.caseStudyProblem || '',
           caseStudySolution: p.caseStudySolution || '',
           caseStudyResult: p.caseStudyResult || '',
@@ -95,9 +96,8 @@ export default function EditProject() {
           technologies: form.technologies
             ? JSON.stringify(form.technologies.split(',').map((t) => t.trim()))
             : null,
-          screenshotUrls: form.screenshotUrls
-            ? JSON.stringify(form.screenshotUrls.split(',').map((u) => u.trim()))
-            : null,
+          screenshotUrls:
+            form.screenshotUrls.length > 0 ? JSON.stringify(form.screenshotUrls) : null,
         }),
       })
 
@@ -195,15 +195,12 @@ export default function EditProject() {
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm mb-2">Screenshot URLs (comma-separated)</label>
-          <input
-            type="text"
-            value={form.screenshotUrls}
-            onChange={(e) => setForm({ ...form, screenshotUrls: e.target.value })}
-            className="input-field"
-          />
-        </div>
+        <ImageMultiUpload
+          value={form.screenshotUrls}
+          onChange={(urls) => setForm({ ...form, screenshotUrls: urls })}
+          folder="projects"
+          label="Screenshots"
+        />
 
         <div className="space-y-4">
           <h3 className="heading-h4">Case Study</h3>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/admin/toast'
 import { PageHeader } from '@/components/admin/page-header'
+import { ImageMultiUpload } from '@/components/admin/image-upload'
 
 export default function NewProject() {
   const router = useRouter()
@@ -18,7 +19,7 @@ export default function NewProject() {
     liveUrl: '',
     githubUrl: '',
     demoUrl: '',
-    screenshotUrls: '',
+    screenshotUrls: [] as string[],
     caseStudyProblem: '',
     caseStudySolution: '',
     caseStudyResult: '',
@@ -40,9 +41,8 @@ export default function NewProject() {
           technologies: form.technologies
             ? JSON.stringify(form.technologies.split(',').map((t) => t.trim()))
             : null,
-          screenshotUrls: form.screenshotUrls
-            ? JSON.stringify(form.screenshotUrls.split(',').map((u) => u.trim()))
-            : null,
+          screenshotUrls:
+            form.screenshotUrls.length > 0 ? JSON.stringify(form.screenshotUrls) : null,
         }),
       })
 
@@ -178,17 +178,12 @@ export default function NewProject() {
           </div>
         </div>
 
-        <div>
-          <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
-            Screenshot URLs (comma-separated)
-          </label>
-          <input
-            type="text"
-            value={form.screenshotUrls}
-            onChange={(e) => setForm({ ...form, screenshotUrls: e.target.value })}
-            className="w-full bg-background border border-border-base text-text-primary px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
-          />
-        </div>
+        <ImageMultiUpload
+          value={form.screenshotUrls}
+          onChange={(urls) => setForm({ ...form, screenshotUrls: urls })}
+          folder="projects"
+          label="Screenshots"
+        />
 
         <div className="border-t border-border-base pt-6 space-y-4">
           <h3 className="text-sm font-medium text-text-primary">Case Study</h3>

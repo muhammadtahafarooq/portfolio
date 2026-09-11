@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Save } from 'lucide-react'
 import { PageHeader } from '@/components/admin/page-header'
 import { useToast } from '@/components/admin/toast'
+import { ImageUpload } from '@/components/admin/image-upload'
 
 interface Profile {
   name: string
@@ -151,17 +152,12 @@ export default function ProfileAdmin() {
                 className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary transition-colors w-full"
               />
             </div>
-            <div>
-              <label className="block text-[11px] font-mono uppercase tracking-widest text-text-muted mb-1">
-                Avatar URL
-              </label>
-              <input
-                type="text"
-                value={profile.avatarUrl || ''}
-                onChange={(e) => setProfile({ ...profile, avatarUrl: e.target.value })}
-                className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary transition-colors w-full"
-              />
-            </div>
+            <ImageUpload
+              value={profile.avatarUrl || ''}
+              onChange={(url) => setProfile({ ...profile, avatarUrl: url })}
+              folder="avatar"
+              label="Avatar"
+            />
           </div>
         </div>
 
