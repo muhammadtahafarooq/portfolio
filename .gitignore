@@ -64,3 +64,10 @@ dev-output.log
 dev-output.txt
 dev.log
 design/
+test_upload.ps1
+test_pixel.png
+cookies.txt
+cf_cookies.txt
+profile_test.html
+body.json
+login_body.json

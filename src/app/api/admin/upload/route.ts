@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { requireAuth, apiError, apiSuccess } from '@/lib/api-helpers'
 import { uploadImage } from '@/lib/storage'
 
@@ -32,14 +31,15 @@ export async function POST(request: Request) {
 
     if (!result.success) {
       return Response.json(
-        { success: false, error: result.error || 'Failed to upload file', debug: result },
+        { success: false, error: result.error || 'Failed to upload file' },
         { status: 500 }
       )
     }
 
     return apiSuccess({ url: result.url })
   } catch (err) {
-    console.error('Upload error:', err)
-    return apiError('Failed to upload file', 500)
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('Upload error:', msg)
+    return Response.json({ success: false, error: msg }, { status: 500 })
   }
 }
