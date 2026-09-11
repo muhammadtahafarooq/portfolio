@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
-const publicAdminPaths = ['/admin/login', '/admin/forgot-password', '/admin/reset-password']
+const publicAdminPaths = [
+  '/admin/login',
+  '/admin/forgot-password',
+  '/admin/reset-password',
+  '/api/admin/login-check',
+]
 
 const securityHeaders: Record<string, string> = {
   'X-Frame-Options': 'DENY',
@@ -30,12 +35,16 @@ export async function middleware(req: NextRequest) {
     return response
   }
 
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  try {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
-  if ((path.startsWith('/admin') || path.startsWith('/api/admin')) && !token) {
-    const loginUrl = new URL('/admin/login', req.url)
-    loginUrl.searchParams.set('callbackUrl', req.url)
-    return NextResponse.redirect(loginUrl)
+    if ((path.startsWith('/admin') || path.startsWith('/api/admin')) && !token) {
+      const loginUrl = new URL('/admin/login', req.url)
+      loginUrl.searchParams.set('callbackUrl', req.url)
+      return NextResponse.redirect(loginUrl)
+    }
+  } catch (err) {
+    console.error('Middleware auth error:', err)
   }
 
   return response
