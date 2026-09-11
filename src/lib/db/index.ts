@@ -7,7 +7,7 @@ let _db: DbInstance | null = null
 
 async function createDb(): Promise<DbInstance> {
   const [{ createClient }, { drizzle }] = await Promise.all([
-    import('@libsql/client'),
+    import('@libsql/client/web'),
     import('drizzle-orm/libsql'),
   ])
   const url = process.env.TURSO_DATABASE_URL
