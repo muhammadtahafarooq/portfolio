@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ['@libsql/client', 'bcryptjs', 'bcrypt'],
   images: {
     remotePatterns: [
       {
