@@ -1,12 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { isRateLimited, getRemainingTime } from '@/lib/rate-limit'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest, { params }: { params: { nextauth: string[] } }) {
   try {
     const { default: NextAuth } = await import('next-auth')
     const { authOptions } = await import('@/lib/auth')
     const handler = NextAuth(authOptions)
-    return await handler(request, new Response())
+
+    const req = Object.assign(request, { query: params })
+
+    return await handler(req, new Response())
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     const stack = err instanceof Error ? err.stack : ''
@@ -15,7 +18,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest, { params }: { params: { nextauth: string[] } }) {
   try {
     const forwarded = request.headers.get('x-forwarded-for')
     const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
@@ -31,7 +34,10 @@ export async function POST(request: Request) {
     const { default: NextAuth } = await import('next-auth')
     const { authOptions } = await import('@/lib/auth')
     const handler = NextAuth(authOptions)
-    return await handler(request, new Response())
+
+    const req = Object.assign(request, { query: params })
+
+    return await handler(req, new Response())
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     const stack = err instanceof Error ? err.stack : ''
