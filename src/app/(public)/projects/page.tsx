@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import { getProjects } from '@/lib/db/queries'
 import { ProjectsHero } from './projects-hero'

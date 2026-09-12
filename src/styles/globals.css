@@ -110,8 +110,8 @@
 
   @media (max-width: 768px) {
     .section-padding {
-      padding-top: 96px;
-      padding-bottom: 96px;
+      padding-top: 64px;
+      padding-bottom: 64px;
     }
   }
 
@@ -168,7 +168,7 @@
 
   .marquee-content span {
     font-family: "Inter", sans-serif;
-    font-size: 88px;
+    font-size: clamp(40px, 12vw, 88px);
     font-weight: 800;
     text-transform: uppercase;
     color: transparent;

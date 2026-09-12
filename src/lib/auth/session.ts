@@ -5,7 +5,7 @@ const SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback
 
 export const SESSION_CONFIG = {
   cookieName: 'admin-session',
-  maxAge: 5 * 60,
+  maxAge: 24 * 60 * 60,
 }
 
 export interface SessionUser {

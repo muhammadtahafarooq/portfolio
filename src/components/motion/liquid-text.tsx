@@ -35,10 +35,6 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
   return (
     <Tag className={cn(tagClass[as], 'relative inline-block', className)}>
       <style>{`
-        @keyframes liquid-float {
-          0%, 100% { transform: translateY(0px) }
-          50% { transform: translateY(-6px) }
-        }
         @media (prefers-reduced-motion: reduce) {
           .liquid-char { animation: none !important }
         }
@@ -64,7 +60,6 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
             className="liquid-char inline-block"
             style={{
               color: '#F1EDE5',
-              animation: `liquid-float 3s ease-in-out ${(i * 0.15) % 2}s infinite`,
             }}
             variants={{
               hidden: {

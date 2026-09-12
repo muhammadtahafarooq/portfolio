@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import Link from 'next/link'
 import Image from 'next/image'
@@ -123,7 +123,7 @@ export default async function HomePage() {
               direction="right"
             >
               <TiltCard>
-                <div className="relative aspect-[3/4] border border-border bg-surface max-w-[240px] mx-auto overflow-hidden">
+                <div className="relative aspect-[3/4] bg-surface max-w-[240px] mx-auto overflow-hidden">
                   {profile?.avatarUrl ? (
                     <Image
                       src={profile.avatarUrl}
@@ -477,7 +477,7 @@ export default async function HomePage() {
 
       <footer className="border-t border-border bg-background-secondary">
         <div className="container-main py-16">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
             <div>
               <Link href="/" className="relative group inline-block">
                 <span className="text-lg font-semibold text-text group-hover:text-primary transition-colors">
@@ -539,7 +539,7 @@ export default async function HomePage() {
                   href="https://mail.google.com/mail/?view=cm&fs=1&to=muhammadtahafarooq22@gmail.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-text-secondary hover:text-text transition-colors"
+                  className="text-sm text-text-secondary hover:text-text transition-colors break-all"
                 >
                   muhammadtahafarooq22@gmail.com
                 </a>

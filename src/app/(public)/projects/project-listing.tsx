@@ -23,10 +23,12 @@ export function ProjectListing({ projects }: ProjectListingProps) {
       <div className="space-y-24">
         {projects.map((project, index) => {
           const isImageLeft = index % 2 === 0
-          const colImage = isImageLeft ? 'col-span-7' : 'col-span-5 md:col-start-8'
-          const colInfo = isImageLeft ? 'col-span-5' : 'col-span-7'
-          const imageOrder = isImageLeft ? 'order-1' : 'order-2'
-          const infoOrder = isImageLeft ? 'order-2' : 'order-1'
+          const colImage = isImageLeft
+            ? 'md:col-span-7 col-span-12'
+            : 'md:col-span-5 col-span-12 md:col-start-8'
+          const colInfo = isImageLeft ? 'md:col-span-5 col-span-12' : 'md:col-span-7 col-span-12'
+          const imageOrder = isImageLeft ? 'md:order-1 order-2' : 'md:order-2 order-2'
+          const infoOrder = isImageLeft ? 'md:order-2 order-1' : 'md:order-1 order-1'
           const badge = getBadge(project.isFeatured)
           const projectNum = getProjectNumber(index)
           const screenshotUrl = project.screenshotUrls
