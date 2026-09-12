@@ -33,9 +33,8 @@ local.db
 
 # cloudflare
 .wrangler
-.dev.vars
-.vercel/output
 .open-next
+wrangler.toml
 
 # typescript
 *.tsbuildinfo
