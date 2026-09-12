@@ -286,6 +286,36 @@ export default async function ProjectPage({ params }: { params: { slug: string }
         <div className="thin-divider" />
       </div>
 
+      {/* View Live / GitHub buttons — always visible when URLs exist */}
+      <section className="section-padding container-main">
+        <Reveal>
+          <div className="flex flex-wrap items-center gap-4">
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                View Live
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary inline-flex items-center gap-2"
+              >
+                Review Source
+                <Github className="w-4 h-4" />
+              </a>
+            )}
+          </div>
+        </Reveal>
+      </section>
+
       {project.caseStudyProblem && (
         <section className="section-padding container-main">
           <div className="grid-12">

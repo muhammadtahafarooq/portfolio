@@ -13,8 +13,6 @@ const navLinks = [
   { label: 'About', href: '/about' },
   { label: 'Projects', href: '/projects' },
   { label: 'Experience', href: '/experience' },
-  { label: 'Education', href: '/education' },
-  { label: 'Certifications', href: '/certifications' },
   { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -44,9 +42,7 @@ export function HomeNavbar() {
               href={item.href}
               className={cn(
                 'text-sm font-medium transition-colors duration-150 relative group',
-                pathname === item.href ? 'text-primary' : 'text-text-secondary hover:text-text',
-                item.href === '/education' && 'hidden lg:inline-block',
-                item.href === '/certifications' && 'hidden lg:inline-block'
+                pathname === item.href ? 'text-primary' : 'text-text-secondary hover:text-text'
               )}
             >
               <FerrisText text={item.label} />

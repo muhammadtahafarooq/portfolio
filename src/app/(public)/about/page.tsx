@@ -99,16 +99,16 @@ export default async function AboutPage() {
                 ) : (
                   <div className="space-y-4">
                     <p className="body-text-lg text-text-secondary">
-                      I believe that great software is born at the intersection of robust
-                      engineering and thoughtful design. Every project I undertake is an opportunity
-                      to push boundaries and create something that not only functions flawlessly but
-                      also resonates on a visual and experiential level.
+                      I combine thoughtful engineering with purposeful design to create refined
+                      digital experiences.
                     </p>
                     <p className="body-text-lg text-text-secondary">
-                      My approach combines systematic problem-solving with an eye for detail,
-                      ensuring that each line of code serves both a technical and aesthetic purpose.
-                      From architecting scalable systems to crafting pixel-perfect interfaces, I
-                      strive to deliver digital experiences that leave a lasting impression.
+                      My work brings together development, interaction, and visual design to build
+                      products that are both functional and engaging.
+                    </p>
+                    <p className="body-text-lg text-text-secondary">
+                      With every project, I focus on solving problems, refining ideas, and
+                      delivering meaningful digital experiences.
                     </p>
                   </div>
                 )}
@@ -139,7 +139,7 @@ export default async function AboutPage() {
                       FOCUS
                     </p>
                     <p className="font-body-lg text-text-primary">
-                      Building intelligent, scalable, and beautiful digital products
+                      Building thoughtful, interactive, and visually refined digital experiences.
                     </p>
                   </div>
                 </div>

@@ -13,8 +13,9 @@ export function ProjectsHero() {
           </p>
           <h1 className="font-h1 text-text-primary mb-6">Selected Projects</h1>
           <p className="font-body-lg text-text-secondary max-w-xl leading-body">
-            A curated selection of work spanning full-stack development, AI-powered systems, and
-            interactive experiences — built with precision, shipped with purpose.
+            A curated selection of digital experiences spanning full-stack development, intelligent
+            systems, and immersive interfaces — engineered with precision, designed with intention,
+            and built to make an impact.
           </p>
         </Reveal>
 
