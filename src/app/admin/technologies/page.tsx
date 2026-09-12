@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/admin/page-header'
 import { EmptyState } from '@/components/admin/empty-state'
 import { ConfirmDialog } from '@/components/admin/confirm-dialog'
 import { useToast } from '@/components/admin/toast'
+import { ImageUpload } from '@/components/admin/image-upload'
 
 interface Technology {
   id: number
@@ -147,13 +148,6 @@ export default function TechnologiesAdmin() {
             className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
           <input
-            type="text"
-            placeholder="Icon URL (optional)"
-            value={form.iconUrl}
-            onChange={(e) => setForm({ ...form, iconUrl: e.target.value })}
-            className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
-          />
-          <input
             type="number"
             placeholder="Sort"
             value={form.sortOrder}
@@ -161,6 +155,12 @@ export default function TechnologiesAdmin() {
             className="bg-background border border-border-base px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
           />
         </div>
+        <ImageUpload
+          value={form.iconUrl}
+          onChange={(url) => setForm({ ...form, iconUrl: url })}
+          folder="technologies"
+          label="Icon Image"
+        />
         <div className="flex gap-2">
           <button
             onClick={editingId ? () => handleUpdate(editingId) : handleCreate}
