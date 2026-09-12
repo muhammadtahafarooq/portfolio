@@ -6,10 +6,12 @@ import {
   getFeaturedProjects,
   getSkills,
   getTechnologies,
+  getExperience,
+  getCertifications,
   getProfile,
   getAbout,
 } from '@/lib/db/queries'
-import { Reveal } from '@/components/motion'
+import { Reveal, Stagger, StaggerItem } from '@/components/motion'
 import { LiquidText } from '@/components/motion/liquid-text'
 import { TiltCard } from '@/components/motion/tilt-card'
 import { HomeNavbar } from '@/components/public/home-navbar'
@@ -41,14 +43,16 @@ function groupByCategory<T extends { category: string | null }>(items: T[]): Map
 }
 
 export default async function HomePage() {
-  const [projects, skills, technologies, profile, about] = await Promise.all([
-    getFeaturedProjects(),
-    getSkills(),
-    getTechnologies(),
-    getProfile(),
-    getAbout(),
-  ])
-
+  const [projects, skills, technologies, experience, certifications, profile, about] =
+    await Promise.all([
+      getFeaturedProjects(),
+      getSkills(),
+      getTechnologies(),
+      getExperience(),
+      getCertifications(),
+      getProfile(),
+      getAbout(),
+    ])
   const skillGroups = groupByCategory(skills)
   const techGroups = groupByCategory(technologies)
 
@@ -320,6 +324,101 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      <div className="thin-divider" />
+
+      <section className="section-padding bg-background-secondary">
+        <div className="container-main">
+          <Reveal>
+            <h2 className="heading-h2 mb-16">Professional Background</h2>
+          </Reveal>
+
+          {experience.length > 0 && (
+            <div className="mb-16">
+              <Stagger stagger={0.05}>
+                {experience.map((exp) => (
+                  <StaggerItem key={exp.id}>
+                    <div className="grid-12 items-center py-6 border-b border-border">
+                      <div className="col-span-12 md:col-span-3">
+                        <p className="technical-text">
+                          {exp.startDate || '—'}
+                          {exp.endDate ? ` — ${exp.endDate}` : exp.isCurrent ? ' — Present' : ''}
+                        </p>
+                      </div>
+                      <div className="col-span-12 md:col-span-5">
+                        <h4 className="heading-h4">{exp.role}</h4>
+                        {exp.organization && (
+                          <p className="text-sm text-text-secondary mt-1">{exp.organization}</p>
+                        )}
+                      </div>
+                      <div className="col-span-12 md:col-span-3">
+                        <Link
+                          href="/experience"
+                          className="tech-tag hover:text-primary hover:border-primary transition-colors"
+                        >
+                          Experience
+                        </Link>
+                      </div>
+                      <div className="col-span-12 md:col-span-1 text-right hidden md:block">
+                        <Link
+                          href="/experience"
+                          className="text-primary hover:text-primary/80 transform hover:translate-x-1 transition-all"
+                        >
+                          &rarr;
+                        </Link>
+                      </div>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+            </div>
+          )}
+
+          {certifications.length > 0 && (
+            <div>
+              <Stagger stagger={0.05}>
+                {certifications.map((cert) => (
+                  <StaggerItem key={cert.id}>
+                    <div className="grid-12 items-center py-6 border-b border-border">
+                      <div className="col-span-12 md:col-span-3">
+                        <p className="technical-text">{cert.date || '—'}</p>
+                      </div>
+                      <div className="col-span-12 md:col-span-5">
+                        <h4 className="heading-h4">{cert.name}</h4>
+                        {cert.issuer && (
+                          <p className="text-sm text-text-secondary mt-1">{cert.issuer}</p>
+                        )}
+                      </div>
+                      <div className="col-span-12 md:col-span-3">
+                        <Link
+                          href="/certifications"
+                          className="tech-tag hover:text-primary hover:border-primary transition-colors"
+                        >
+                          Certification
+                        </Link>
+                      </div>
+                      <div className="col-span-12 md:col-span-1 text-right hidden md:block">
+                        <Link
+                          href="/certifications"
+                          className="text-primary hover:text-primary/80 transform hover:translate-x-1 transition-all"
+                        >
+                          &rarr;
+                        </Link>
+                      </div>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+            </div>
+          )}
+
+          {experience.length === 0 && certifications.length === 0 && (
+            <p className="text-text-muted">
+              Professional background will appear here once added through the admin panel.
+            </p>
+          )}
+        </div>
+      </section>
 
       <div className="thin-divider" />
 
