@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
 import { sql } from 'drizzle-orm'
 
 // ============================================================================
@@ -39,14 +39,20 @@ export const about = sqliteTable('about', {
 // Pattern: Collection (ordered list)
 // ============================================================================
 
-export const skills = sqliteTable('skills', {
-  id: integer('id').primaryKey(),
-  name: text('name').notNull(),
-  category: text('category'),
-  description: text('description'),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const skills = sqliteTable(
+  'skills',
+  {
+    id: integer('id').primaryKey(),
+    name: text('name').notNull(),
+    category: text('category'),
+    description: text('description'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    sortOrderIdx: index('skills_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: technologies
@@ -54,14 +60,20 @@ export const skills = sqliteTable('skills', {
 // Pattern: Collection (ordered list)
 // ============================================================================
 
-export const technologies = sqliteTable('technologies', {
-  id: integer('id').primaryKey(),
-  name: text('name').notNull(),
-  iconUrl: text('icon_url'),
-  category: text('category'),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const technologies = sqliteTable(
+  'technologies',
+  {
+    id: integer('id').primaryKey(),
+    name: text('name').notNull(),
+    iconUrl: text('icon_url'),
+    category: text('category'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    sortOrderIdx: index('technologies_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: projects
@@ -73,28 +85,37 @@ export const technologies = sqliteTable('technologies', {
 //   - github_repo_id: Links to GitHub repository if synced
 // ============================================================================
 
-export const projects = sqliteTable('projects', {
-  id: integer('id').primaryKey(),
-  title: text('title').notNull(),
-  slug: text('slug').unique().notNull(),
-  description: text('description'),
-  shortStatement: text('short_statement'),
-  technologies: text('technologies'), // JSON array
-  liveUrl: text('live_url'),
-  githubUrl: text('github_url'),
-  demoUrl: text('demo_url'),
-  screenshotUrls: text('screenshot_urls'), // JSON array
-  caseStudyProblem: text('case_study_problem'),
-  caseStudySolution: text('case_study_solution'),
-  caseStudyResult: text('case_study_result'),
-  isFeatured: integer('is_featured', { mode: 'boolean' }).notNull().default(false),
-  isVisible: integer('is_visible', { mode: 'boolean' }).notNull().default(true),
-  sortOrder: integer('sort_order').notNull().default(0),
-  githubRepoId: integer('github_repo_id'),
-  githubSyncedAt: text('github_synced_at'),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-  updatedAt: text('updated_at').default(sql`datetime('now')`),
-})
+export const projects = sqliteTable(
+  'projects',
+  {
+    id: integer('id').primaryKey(),
+    title: text('title').notNull(),
+    slug: text('slug').unique().notNull(),
+    description: text('description'),
+    shortStatement: text('short_statement'),
+    technologies: text('technologies'), // JSON array
+    liveUrl: text('live_url'),
+    githubUrl: text('github_url'),
+    demoUrl: text('demo_url'),
+    screenshotUrls: text('screenshot_urls'), // JSON array
+    caseStudyProblem: text('case_study_problem'),
+    caseStudySolution: text('case_study_solution'),
+    caseStudyResult: text('case_study_result'),
+    isFeatured: integer('is_featured', { mode: 'boolean' }).notNull().default(false),
+    isVisible: integer('is_visible', { mode: 'boolean' }).notNull().default(true),
+    sortOrder: integer('sort_order').notNull().default(0),
+    githubRepoId: integer('github_repo_id'),
+    githubSyncedAt: text('github_synced_at'),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+    updatedAt: text('updated_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    slugIdx: index('projects_slug_idx').on(t.slug),
+    isFeaturedIdx: index('projects_is_featured_idx').on(t.isFeatured),
+    isVisibleIdx: index('projects_is_visible_idx').on(t.isVisible),
+    sortOrderIdx: index('projects_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: experience
@@ -102,17 +123,23 @@ export const projects = sqliteTable('projects', {
 // Pattern: Collection (ordered list, date-range)
 // ============================================================================
 
-export const experience = sqliteTable('experience', {
-  id: integer('id').primaryKey(),
-  role: text('role').notNull(),
-  organization: text('organization'),
-  description: text('description'),
-  startDate: text('start_date'),
-  endDate: text('end_date'),
-  isCurrent: integer('is_current', { mode: 'boolean' }).notNull().default(false),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const experience = sqliteTable(
+  'experience',
+  {
+    id: integer('id').primaryKey(),
+    role: text('role').notNull(),
+    organization: text('organization'),
+    description: text('description'),
+    startDate: text('start_date'),
+    endDate: text('end_date'),
+    isCurrent: integer('is_current', { mode: 'boolean' }).notNull().default(false),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    sortOrderIdx: index('experience_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: education
@@ -120,17 +147,23 @@ export const experience = sqliteTable('experience', {
 // Pattern: Collection (ordered list, date-range)
 // ============================================================================
 
-export const education = sqliteTable('education', {
-  id: integer('id').primaryKey(),
-  institution: text('institution').notNull(),
-  qualification: text('qualification'),
-  program: text('program'),
-  description: text('description'),
-  startDate: text('start_date'),
-  endDate: text('end_date'),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const education = sqliteTable(
+  'education',
+  {
+    id: integer('id').primaryKey(),
+    institution: text('institution').notNull(),
+    qualification: text('qualification'),
+    program: text('program'),
+    description: text('description'),
+    startDate: text('start_date'),
+    endDate: text('end_date'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    sortOrderIdx: index('education_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: certifications
@@ -138,15 +171,21 @@ export const education = sqliteTable('education', {
 // Pattern: Collection (ordered list)
 // ============================================================================
 
-export const certifications = sqliteTable('certifications', {
-  id: integer('id').primaryKey(),
-  name: text('name').notNull(),
-  issuer: text('issuer'),
-  date: text('date'),
-  description: text('description'),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const certifications = sqliteTable(
+  'certifications',
+  {
+    id: integer('id').primaryKey(),
+    name: text('name').notNull(),
+    issuer: text('issuer'),
+    date: text('date'),
+    description: text('description'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    sortOrderIdx: index('certifications_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: achievements
@@ -154,14 +193,20 @@ export const certifications = sqliteTable('certifications', {
 // Pattern: Collection (ordered list)
 // ============================================================================
 
-export const achievements = sqliteTable('achievements', {
-  id: integer('id').primaryKey(),
-  title: text('title').notNull(),
-  description: text('description'),
-  date: text('date'),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const achievements = sqliteTable(
+  'achievements',
+  {
+    id: integer('id').primaryKey(),
+    title: text('title').notNull(),
+    description: text('description'),
+    date: text('date'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    sortOrderIdx: index('achievements_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: resume
@@ -185,14 +230,21 @@ export const resume = sqliteTable('resume', {
 // Pattern: Collection (ordered list, visibility control)
 // ============================================================================
 
-export const socialLinks = sqliteTable('social_links', {
-  id: integer('id').primaryKey(),
-  platform: text('platform').notNull(),
-  url: text('url').notNull(),
-  isVisible: integer('is_visible', { mode: 'boolean' }).notNull().default(true),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const socialLinks = sqliteTable(
+  'social_links',
+  {
+    id: integer('id').primaryKey(),
+    platform: text('platform').notNull(),
+    url: text('url').notNull(),
+    isVisible: integer('is_visible', { mode: 'boolean' }).notNull().default(true),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    isVisibleIdx: index('social_links_is_visible_idx').on(t.isVisible),
+    sortOrderIdx: index('social_links_sort_order_idx').on(t.sortOrder),
+  })
+)
 
 // ============================================================================
 // TABLE: contact_messages
@@ -203,15 +255,21 @@ export const socialLinks = sqliteTable('social_links', {
 //   - is_read tracks whether admin has viewed the message
 // ============================================================================
 
-export const contactMessages = sqliteTable('contact_messages', {
-  id: integer('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull(),
-  subject: text('subject'),
-  message: text('message').notNull(),
-  isRead: integer('is_read', { mode: 'boolean' }).notNull().default(false),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const contactMessages = sqliteTable(
+  'contact_messages',
+  {
+    id: integer('id').primaryKey(),
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    subject: text('subject'),
+    message: text('message').notNull(),
+    isRead: integer('is_read', { mode: 'boolean' }).notNull().default(false),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    isReadIdx: index('contact_messages_is_read_idx').on(t.isRead),
+  })
+)
 
 // ============================================================================
 // TABLE: homepage_content
@@ -259,12 +317,18 @@ export const siteSettings = sqliteTable('site_settings', {
 //   - No public registration; admin created via seed or migration
 // ============================================================================
 
-export const adminUsers = sqliteTable('admin_users', {
-  id: integer('id').primaryKey(),
-  email: text('email').unique().notNull(),
-  passwordHash: text('password_hash').notNull(),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const adminUsers = sqliteTable(
+  'admin_users',
+  {
+    id: integer('id').primaryKey(),
+    email: text('email').unique().notNull(),
+    passwordHash: text('password_hash').notNull(),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    emailIdx: index('admin_users_email_idx').on(t.email),
+  })
+)
 
 // ============================================================================
 // TABLE: password_reset_tokens
@@ -272,14 +336,20 @@ export const adminUsers = sqliteTable('admin_users', {
 // Pattern: Collection (tokens with expiry)
 // ============================================================================
 
-export const passwordResetTokens = sqliteTable('password_reset_tokens', {
-  id: integer('id').primaryKey(),
-  token: text('token').unique().notNull(),
-  email: text('email').notNull(),
-  expiresAt: text('expires_at').notNull(),
-  used: integer('used', { mode: 'boolean' }).notNull().default(false),
-  createdAt: text('created_at').default(sql`datetime('now')`),
-})
+export const passwordResetTokens = sqliteTable(
+  'password_reset_tokens',
+  {
+    id: integer('id').primaryKey(),
+    token: text('token').unique().notNull(),
+    email: text('email').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    used: integer('used', { mode: 'boolean' }).notNull().default(false),
+    createdAt: text('created_at').default(sql`datetime('now')`),
+  },
+  (t) => ({
+    tokenIdx: index('password_reset_tokens_token_idx').on(t.token),
+  })
+)
 
 // ============================================================================
 // TYPES
