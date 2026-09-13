@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { useReducedMotion } from '@/hooks'
 import { cn } from '@/lib/utils'
@@ -21,6 +21,15 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-80px' })
   const prefersReduced = useReducedMotion()
+  const [showFloat, setShowFloat] = useState(false)
+
+  useEffect(() => {
+    if (isInView && !prefersReduced) {
+      const delay = 200 + text.length * 30 + 600
+      const timer = setTimeout(() => setShowFloat(true), delay)
+      return () => clearTimeout(timer)
+    }
+  }, [isInView, prefersReduced, text])
 
   const Tag = as
 
@@ -37,6 +46,7 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
       <style>{`
         @media (prefers-reduced-motion: reduce) {
           .liquid-char { animation: none !important }
+          .liquid-float { animation: none !important }
         }
       `}</style>
       <motion.div
@@ -53,6 +63,14 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
           },
         }}
         aria-label={text}
+        className={showFloat ? 'liquid-float' : ''}
+        style={
+          showFloat
+            ? {
+                animation: 'liquid-float 4s ease-in-out infinite',
+              }
+            : undefined
+        }
       >
         {text.split('').map((char, i) => (
           <motion.span
