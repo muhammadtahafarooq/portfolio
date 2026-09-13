@@ -33,11 +33,14 @@ export default function SettingsAdmin() {
   const fetchSettings = async () => {
     try {
       const res = await fetch('/api/admin/settings')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load settings')
+      }
       const json = await res.json()
       if (json.data) setSettings(json.data)
-    } catch {
-      setError('Failed to load settings')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load settings')
     } finally {
       setLoading(false)
     }
@@ -51,10 +54,13 @@ export default function SettingsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to save settings')
+      }
       toast('Settings saved')
-    } catch {
-      toast('Failed to save settings', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to save settings', 'error')
     } finally {
       setSaving(false)
     }

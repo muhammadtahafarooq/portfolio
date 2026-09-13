@@ -35,11 +35,14 @@ export default function TechnologiesAdmin() {
   const fetchItems = async () => {
     try {
       const res = await fetch('/api/admin/technologies')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load technologies')
+      }
       const json = await res.json()
       setItems(json.data)
-    } catch {
-      setError('Failed to load technologies')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load technologies')
     } finally {
       setLoading(false)
     }
@@ -57,13 +60,16 @@ export default function TechnologiesAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, iconUrl: form.iconUrl || null }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to create technology')
+      }
       const json = await res.json()
       setItems([...items, json.data])
       setForm(emptyForm)
       toast('Technology added')
-    } catch {
-      toast('Failed to create', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to create', 'error')
     } finally {
       setSaving(false)
     }
@@ -81,14 +87,17 @@ export default function TechnologiesAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, iconUrl: form.iconUrl || null }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update technology')
+      }
       const json = await res.json()
       setItems(items.map((i) => (i.id === id ? json.data : i)))
       setEditingId(null)
       setForm(emptyForm)
       toast('Technology updated')
-    } catch {
-      toast('Failed to update', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update', 'error')
     } finally {
       setSaving(false)
     }
@@ -98,11 +107,14 @@ export default function TechnologiesAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/technologies/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete technology')
+      }
       setItems(items.filter((i) => i.id !== deleteTarget))
       toast('Technology deleted')
-    } catch {
-      toast('Failed to delete', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete', 'error')
     } finally {
       setDeleteTarget(null)
     }

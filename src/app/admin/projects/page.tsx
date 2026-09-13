@@ -36,11 +36,14 @@ export default function ProjectsAdmin() {
   const fetchProjects = async () => {
     try {
       const res = await fetch('/api/admin/projects')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load projects')
+      }
       const json = await res.json()
       setProjects(json.data)
-    } catch {
-      toast('Failed to load projects', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to load projects', 'error')
     } finally {
       setLoading(false)
     }
@@ -53,10 +56,13 @@ export default function ProjectsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isVisible }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update visibility')
+      }
       setProjects(projects.map((p) => (p.id === id ? { ...p, isVisible } : p)))
-    } catch {
-      toast('Failed to update visibility', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update visibility', 'error')
     }
   }
 
@@ -67,10 +73,13 @@ export default function ProjectsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isFeatured }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update featured status')
+      }
       setProjects(projects.map((p) => (p.id === id ? { ...p, isFeatured } : p)))
-    } catch {
-      toast('Failed to update featured status', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update featured status', 'error')
     }
   }
 
@@ -78,11 +87,14 @@ export default function ProjectsAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/projects/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete project')
+      }
       setProjects(projects.filter((p) => p.id !== deleteTarget))
       toast('Project deleted')
-    } catch {
-      toast('Failed to delete project', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete project', 'error')
     } finally {
       setDeleteTarget(null)
     }

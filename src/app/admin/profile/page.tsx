@@ -38,11 +38,14 @@ export default function ProfileAdmin() {
   const fetchProfile = async () => {
     try {
       const res = await fetch('/api/admin/profile')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load profile')
+      }
       const json = await res.json()
       if (json.data) setProfile(json.data)
-    } catch {
-      setError('Failed to load profile')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load profile')
     } finally {
       setLoading(false)
     }
@@ -60,10 +63,13 @@ export default function ProfileAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to save profile')
+      }
       toast('Profile saved')
-    } catch {
-      toast('Failed to save profile', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to save profile', 'error')
     } finally {
       setSaving(false)
     }

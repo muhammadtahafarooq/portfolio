@@ -34,11 +34,14 @@ export default function SkillsAdmin() {
   const fetchSkills = async () => {
     try {
       const res = await fetch('/api/admin/skills')
-      if (!res.ok) throw new Error('Failed to fetch')
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load skills')
+      }
       const json = await res.json()
       setSkills(json.data)
-    } catch {
-      setError('Failed to load skills')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load skills')
     } finally {
       setLoading(false)
     }
@@ -56,13 +59,16 @@ export default function SkillsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error('Failed to create')
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to create skill')
+      }
       const json = await res.json()
       setSkills([...skills, json.data])
       setForm(emptyForm)
       toast('Skill created')
-    } catch {
-      toast('Failed to create skill', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to create skill', 'error')
     } finally {
       setSaving(false)
     }
@@ -80,14 +86,17 @@ export default function SkillsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error('Failed to update')
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update skill')
+      }
       const json = await res.json()
       setSkills(skills.map((s) => (s.id === id ? json.data : s)))
       setEditingId(null)
       setForm(emptyForm)
       toast('Skill updated')
-    } catch {
-      toast('Failed to update skill', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update skill', 'error')
     } finally {
       setSaving(false)
     }
@@ -97,11 +106,14 @@ export default function SkillsAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/skills/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete')
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete skill')
+      }
       setSkills(skills.filter((s) => s.id !== deleteTarget))
       toast('Skill deleted')
-    } catch {
-      toast('Failed to delete skill', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete skill', 'error')
     } finally {
       setDeleteTarget(null)
     }

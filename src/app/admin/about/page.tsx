@@ -25,11 +25,14 @@ export default function AboutAdmin() {
   const fetchAbout = async () => {
     try {
       const res = await fetch('/api/admin/about')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load about content')
+      }
       const json = await res.json()
       if (json.data) setAbout(json.data)
-    } catch {
-      setError('Failed to load about content')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load about content')
     } finally {
       setLoading(false)
     }
@@ -47,10 +50,13 @@ export default function AboutAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(about),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to save about content')
+      }
       toast('About content saved')
-    } catch {
-      toast('Failed to save', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to save', 'error')
     } finally {
       setSaving(false)
     }

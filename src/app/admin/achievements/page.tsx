@@ -34,11 +34,14 @@ export default function AchievementsAdmin() {
   const fetchItems = async () => {
     try {
       const res = await fetch('/api/admin/achievements')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load achievements')
+      }
       const json = await res.json()
       setItems(json.data)
-    } catch {
-      setError('Failed to load achievements')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load achievements')
     } finally {
       setLoading(false)
     }
@@ -56,13 +59,16 @@ export default function AchievementsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to create achievement')
+      }
       const json = await res.json()
       setItems([...items, json.data])
       setForm(emptyForm)
       toast('Achievement added')
-    } catch {
-      toast('Failed to create', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to create', 'error')
     } finally {
       setSaving(false)
     }
@@ -80,14 +86,17 @@ export default function AchievementsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update achievement')
+      }
       const json = await res.json()
       setItems(items.map((i) => (i.id === id ? json.data : i)))
       setEditingId(null)
       setForm(emptyForm)
       toast('Achievement updated')
-    } catch {
-      toast('Failed to update', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update', 'error')
     } finally {
       setSaving(false)
     }
@@ -97,11 +106,14 @@ export default function AchievementsAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/achievements/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete achievement')
+      }
       setItems(items.filter((i) => i.id !== deleteTarget))
       toast('Achievement deleted')
-    } catch {
-      toast('Failed to delete', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete', 'error')
     } finally {
       setDeleteTarget(null)
     }

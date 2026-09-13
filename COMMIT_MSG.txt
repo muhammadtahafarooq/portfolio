@@ -1,0 +1,19 @@
+fix: admin panel scroll and CRUD operations
+
+Scroll:
+- Move MotionWrapper (Lenis smooth scroll + cursor) from root layout to public layout only
+- Admin panel no longer gets Lenis, restoring native scroll on its overflow-y-auto container
+
+CRUD validation:
+- Add .nullable() to all optional string fields across all Zod validators
+- Fields like technologies, screenshotUrls, iconUrl, etc. were sent as null from admin forms
+- z.string().optional() rejects null; now properly accepts null via nullable()
+
+Project toggle:
+- Add projectUpdateSchema (projectSchema.partial()) for partial updates
+- PUT /api/admin/projects/[id] now uses projectUpdateSchema instead of full projectSchema
+- Fixes "Failed to update" when toggling visibility/featured from project list
+
+Error handling:
+- All admin pages now extract and display actual API error messages
+- Instead of generic "Failed to...", shows the real error from the server

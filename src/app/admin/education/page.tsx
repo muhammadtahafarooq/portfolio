@@ -45,11 +45,14 @@ export default function EducationAdmin() {
   const fetchItems = async () => {
     try {
       const res = await fetch('/api/admin/education')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load education')
+      }
       const json = await res.json()
       setItems(json.data)
-    } catch {
-      setError('Failed to load education')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load education')
     } finally {
       setLoading(false)
     }
@@ -67,13 +70,16 @@ export default function EducationAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to create education')
+      }
       const json = await res.json()
       setItems([...items, json.data])
       setForm(emptyForm)
       toast('Education added')
-    } catch {
-      toast('Failed to create', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to create', 'error')
     } finally {
       setSaving(false)
     }
@@ -91,14 +97,17 @@ export default function EducationAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update education')
+      }
       const json = await res.json()
       setItems(items.map((i) => (i.id === id ? json.data : i)))
       setEditingId(null)
       setForm(emptyForm)
       toast('Education updated')
-    } catch {
-      toast('Failed to update', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update', 'error')
     } finally {
       setSaving(false)
     }
@@ -108,11 +117,14 @@ export default function EducationAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/education/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete education')
+      }
       setItems(items.filter((i) => i.id !== deleteTarget))
       toast('Education deleted')
-    } catch {
-      toast('Failed to delete', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete', 'error')
     } finally {
       setDeleteTarget(null)
     }

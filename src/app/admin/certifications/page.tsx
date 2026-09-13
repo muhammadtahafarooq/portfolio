@@ -35,11 +35,14 @@ export default function CertificationsAdmin() {
   const fetchItems = async () => {
     try {
       const res = await fetch('/api/admin/certifications')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load certifications')
+      }
       const json = await res.json()
       setItems(json.data)
-    } catch {
-      setError('Failed to load certifications')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load certifications')
     } finally {
       setLoading(false)
     }
@@ -57,13 +60,16 @@ export default function CertificationsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to create certification')
+      }
       const json = await res.json()
       setItems([...items, json.data])
       setForm(emptyForm)
       toast('Certification added')
-    } catch {
-      toast('Failed to create', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to create', 'error')
     } finally {
       setSaving(false)
     }
@@ -81,14 +87,17 @@ export default function CertificationsAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update certification')
+      }
       const json = await res.json()
       setItems(items.map((i) => (i.id === id ? json.data : i)))
       setEditingId(null)
       setForm(emptyForm)
       toast('Certification updated')
-    } catch {
-      toast('Failed to update', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update', 'error')
     } finally {
       setSaving(false)
     }
@@ -98,11 +107,14 @@ export default function CertificationsAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/certifications/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete certification')
+      }
       setItems(items.filter((i) => i.id !== deleteTarget))
       toast('Certification deleted')
-    } catch {
-      toast('Failed to delete', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete', 'error')
     } finally {
       setDeleteTarget(null)
     }

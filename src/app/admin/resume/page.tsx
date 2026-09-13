@@ -83,7 +83,10 @@ export default function AdminResumePage() {
   const fetchResume = async () => {
     try {
       const res = await fetch('/api/admin/resume')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load resume')
+      }
       const json = await res.json()
       if (json.data?.content) {
         try {
@@ -99,8 +102,8 @@ export default function AdminResumePage() {
       } else if (json.data?.pdfUrl) {
         setResume({ ...emptyResume, pdfUrl: json.data.pdfUrl })
       }
-    } catch {
-      setError('Failed to load resume')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load resume')
     } finally {
       setLoading(false)
     }
@@ -117,10 +120,13 @@ export default function AdminResumePage() {
           pdfUrl: resume.pdfUrl || '',
         }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to save resume')
+      }
       toast('Resume saved')
-    } catch {
-      toast('Failed to save resume', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to save resume', 'error')
     } finally {
       setSaving(false)
     }

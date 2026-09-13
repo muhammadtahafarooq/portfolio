@@ -105,10 +105,11 @@ export default function EditProject() {
         toast('Project updated', 'success')
         router.push('/admin/projects')
       } else {
-        toast('Failed to update project', 'error')
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update project')
       }
-    } catch {
-      toast('Failed to update project', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update project', 'error')
     } finally {
       setSaving(false)
     }

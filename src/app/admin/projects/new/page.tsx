@@ -50,10 +50,11 @@ export default function NewProject() {
         toast('Project created', 'success')
         router.push('/admin/projects')
       } else {
-        toast('Failed to create project', 'error')
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to create project')
       }
-    } catch {
-      toast('Failed to create project', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to create project', 'error')
     } finally {
       setSaving(false)
     }

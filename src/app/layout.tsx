@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import { MotionWrapper } from '@/components/public/motion-wrapper'
 import '@/styles/globals.css'
 
 const inter = Inter({
@@ -106,15 +105,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen bg-background text-text antialiased">
-        <MotionWrapper>
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium"
-          >
-            Skip to main content
-          </a>
-          {children}
-        </MotionWrapper>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium"
+        >
+          Skip to main content
+        </a>
+        {children}
       </body>
     </html>
   )

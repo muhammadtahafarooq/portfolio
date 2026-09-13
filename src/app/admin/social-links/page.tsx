@@ -34,11 +34,14 @@ export default function SocialLinksAdmin() {
   const fetchItems = async () => {
     try {
       const res = await fetch('/api/admin/social-links')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load social links')
+      }
       const json = await res.json()
       setItems(json.data)
-    } catch {
-      setError('Failed to load social links')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load social links')
     } finally {
       setLoading(false)
     }
@@ -60,13 +63,16 @@ export default function SocialLinksAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to create social link')
+      }
       const json = await res.json()
       setItems([...items, json.data])
       setForm(emptyForm)
       toast('Social link added')
-    } catch {
-      toast('Failed to create', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to create', 'error')
     } finally {
       setSaving(false)
     }
@@ -88,14 +94,17 @@ export default function SocialLinksAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update social link')
+      }
       const json = await res.json()
       setItems(items.map((i) => (i.id === id ? json.data : i)))
       setEditingId(null)
       setForm(emptyForm)
       toast('Social link updated')
-    } catch {
-      toast('Failed to update', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update', 'error')
     } finally {
       setSaving(false)
     }
@@ -105,11 +114,14 @@ export default function SocialLinksAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/social-links/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete social link')
+      }
       setItems(items.filter((i) => i.id !== deleteTarget))
       toast('Social link deleted')
-    } catch {
-      toast('Failed to delete', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete', 'error')
     } finally {
       setDeleteTarget(null)
     }
@@ -122,10 +134,13 @@ export default function SocialLinksAdmin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...items.find((i) => i.id === id), isVisible }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to update visibility')
+      }
       setItems(items.map((i) => (i.id === id ? { ...i, isVisible } : i)))
-    } catch {
-      toast('Failed to update visibility', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update visibility', 'error')
     }
   }
 

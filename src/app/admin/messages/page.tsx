@@ -31,11 +31,14 @@ export default function MessagesAdmin() {
   const fetchMessages = async () => {
     try {
       const res = await fetch('/api/admin/messages')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load messages')
+      }
       const json = await res.json()
       setMessages(json.data)
-    } catch {
-      toast('Failed to load messages', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to load messages', 'error')
     } finally {
       setLoading(false)
     }
@@ -48,11 +51,14 @@ export default function MessagesAdmin() {
     }
     try {
       const res = await fetch(`/api/admin/messages/${msg.id}`)
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to mark as read')
+      }
       setMessages(messages.map((m) => (m.id === msg.id ? { ...m, isRead: true } : m)))
       setSelectedMessage({ ...msg, isRead: true })
-    } catch {
-      toast('Failed to mark as read', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to mark as read', 'error')
     }
   }
 
@@ -60,12 +66,15 @@ export default function MessagesAdmin() {
     if (!deleteTarget) return
     try {
       const res = await fetch(`/api/admin/messages/${deleteTarget}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to delete message')
+      }
       setMessages(messages.filter((m) => m.id !== deleteTarget))
       if (selectedMessage?.id === deleteTarget) setSelectedMessage(null)
       toast('Message deleted')
-    } catch {
-      toast('Failed to delete message', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to delete message', 'error')
     } finally {
       setDeleteTarget(null)
     }

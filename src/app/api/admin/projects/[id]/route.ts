@@ -1,7 +1,7 @@
 import { getDb, schema } from '@/lib/db'
 import { eq } from 'drizzle-orm'
 import { requireAuth, apiError, apiSuccess, validateId, invalidIdResponse } from '@/lib/api-helpers'
-import { projectSchema } from '@/lib/validators'
+import { projectUpdateSchema } from '@/lib/validators'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const db = await getDb()
@@ -40,7 +40,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (numericId === null) return invalidIdResponse()
 
     const body = await request.json()
-    const parsed = projectSchema.safeParse(body)
+    const parsed = projectUpdateSchema.safeParse(body)
 
     if (!parsed.success) {
       return apiError('Invalid input', 400)

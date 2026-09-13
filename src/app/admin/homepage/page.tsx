@@ -29,7 +29,10 @@ export default function AdminHomepagePage() {
   async function fetchContent() {
     try {
       const res = await fetch('/api/admin/homepage')
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to load homepage content')
+      }
       const data = await res.json()
       const content = data.data || data
       setForm({
@@ -37,8 +40,8 @@ export default function AdminHomepagePage() {
         featuredProjectIds: content?.featuredProjectIds || '',
         contactStatement: content?.contactStatement || '',
       })
-    } catch {
-      toast('Failed to load homepage content', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to load homepage content', 'error')
     } finally {
       setLoading(false)
     }
@@ -52,10 +55,13 @@ export default function AdminHomepagePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null)
+        throw new Error(errJson?.error || 'Failed to save homepage content')
+      }
       toast('Homepage content saved', 'success')
-    } catch {
-      toast('Failed to save homepage content', 'error')
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to save homepage content', 'error')
     } finally {
       setSaving(false)
     }
