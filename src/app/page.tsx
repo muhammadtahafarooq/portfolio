@@ -83,7 +83,7 @@ export default async function HomePage() {
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <HeroMilkyWay />
         <div className="container-main relative z-10 pt-16 md:pt-20">
-          <div className="grid-12 items-center min-h-[80vh]">
+          <div className="grid-12 items-center">
             <div className="col-span-12 md:col-span-5">
               <Reveal delay={0.1}>
                 <p className="section-label">Portfolio / 2026</p>
@@ -92,18 +92,18 @@ export default async function HomePage() {
                 <LiquidText text={profile?.name || 'Muhammad Taha'} as="h1" className="mb-4" />
               </Reveal>
               <Reveal delay={0.3}>
-                <h2 className="heading-h3 text-primary mb-6">
+                <h2 className="text-lg md:text-2xl font-medium text-primary mb-4 md:mb-6">
                   {profile?.title || 'Full-Stack + AI Developer'}
                 </h2>
               </Reveal>
               <Reveal delay={0.4}>
-                <p className="body-text-lg text-text-secondary mb-8 max-w-lg">
+                <p className="text-sm md:text-base text-text-secondary mb-6 md:mb-8 max-w-lg leading-relaxed">
                   {profile?.shortBio ||
                     'Building innovative digital experiences with modern technologies. Specializing in React, Next.js, and AI-powered applications.'}
                 </p>
               </Reveal>
               <Reveal delay={0.5}>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-3 md:gap-4">
                   <Link href="/contact" className="btn-primary">
                     Contact Me
                   </Link>
@@ -115,12 +115,12 @@ export default async function HomePage() {
             </div>
 
             <Reveal
-              className="col-span-12 md:col-span-4 md:col-start-9"
+              className="col-span-12 md:col-span-4 md:col-start-9 mt-8 md:mt-0"
               delay={0.3}
               direction="right"
             >
               <TiltCard>
-                <div className="relative aspect-[3/4] bg-surface max-w-[280px] mx-auto overflow-hidden">
+                <div className="relative aspect-[3/4] bg-surface max-w-[180px] md:max-w-[280px] mx-auto overflow-hidden">
                   {profile?.avatarUrl ? (
                     <Image
                       src={profile.avatarUrl}

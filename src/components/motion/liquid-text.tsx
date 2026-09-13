@@ -43,7 +43,7 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
   }
 
   return (
-    <Tag className={cn(tagClass[as], 'relative inline-block whitespace-nowrap', className)}>
+    <Tag className={cn(tagClass[as], 'relative inline-block', className)}>
       <style>{`
         @media (prefers-reduced-motion: reduce) {
           .liquid-char { animation: none !important }

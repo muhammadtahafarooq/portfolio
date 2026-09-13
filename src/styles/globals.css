@@ -188,7 +188,7 @@
   /* Typography */
   .heading-h1 {
     @apply font-semibold leading-[1.0] tracking-[-0.04em];
-    font-size: clamp(48px, 7vw, 88px);
+    font-size: clamp(36px, 7vw, 88px);
   }
 
   .heading-h2 {
