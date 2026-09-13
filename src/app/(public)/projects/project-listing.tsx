@@ -20,7 +20,7 @@ function getProjectNumber(index: number): string {
 export function ProjectListing({ projects }: ProjectListingProps) {
   return (
     <section className="section-padding container-main">
-      <div className="space-y-24">
+      <div className="space-y-16 md:space-y-24">
         {projects.map((project, index) => {
           const isImageLeft = index % 2 === 0
           const colImage = isImageLeft
@@ -50,7 +50,7 @@ export function ProjectListing({ projects }: ProjectListingProps) {
                           sizes="(max-width: 768px) 100vw, 60vw"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-text-muted font-technical-sm">
+                        <div className="w-full h-full flex items-center justify-center text-text-muted technical-text">
                           No Screenshot
                         </div>
                       )}
@@ -59,19 +59,19 @@ export function ProjectListing({ projects }: ProjectListingProps) {
 
                   <div className={`${colInfo} ${infoOrder}`}>
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="font-technical-sm text-text-muted uppercase tracking-technical">
+                      <span className="technical-text text-text-muted uppercase tracking-technical">
                         {projectNum}
                       </span>
-                      <span className="font-technical-sm text-text-primary uppercase tracking-technical border border-border-base px-2 py-0.5">
+                      <span className="technical-text text-text-primary uppercase tracking-technical border border-border-base px-2 py-0.5">
                         {badge}
                       </span>
                     </div>
 
-                    <h2 className="font-h3 text-text-primary mb-4 group-hover:text-primary transition-colors duration-normal">
+                    <h2 className="heading-h3 text-text-primary mb-4 group-hover:text-primary transition-colors duration-normal">
                       {project.title}
                     </h2>
 
-                    <p className="font-body-md text-text-secondary mb-6 max-w-lg leading-body">
+                    <p className="body-text text-text-secondary mb-6 max-w-lg leading-body">
                       {project.shortStatement || project.description}
                     </p>
 
@@ -88,11 +88,11 @@ export function ProjectListing({ projects }: ProjectListingProps) {
                     )}
 
                     <div className="flex gap-4">
-                      <span className="font-technical-sm text-text-primary uppercase tracking-technical border-b border-text-primary pb-0.5 transition-colors group-hover:text-primary group-hover:border-primary">
+                      <span className="technical-text text-text-primary uppercase tracking-technical border-b border-text-primary pb-0.5 transition-colors group-hover:text-primary group-hover:border-primary">
                         View Project
                       </span>
                       {project.githubUrl && (
-                        <span className="font-technical-sm text-text-muted uppercase tracking-technical border-b border-border-base pb-0.5 transition-colors group-hover:text-text-primary group-hover:border-text-primary">
+                        <span className="technical-text text-text-muted uppercase tracking-technical border-b border-border-base pb-0.5 transition-colors group-hover:text-text-primary group-hover:border-text-primary">
                           GitHub
                         </span>
                       )}

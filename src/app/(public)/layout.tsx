@@ -10,7 +10,7 @@ export default async function PublicLayout({ children }: { children: React.React
     <MotionWrapper>
       <div className="min-h-screen flex flex-col relative">
         <Navbar socialLinks={socialLinks} />
-        <main className="flex-1 pt-20 relative z-10">{children}</main>
+        <main className="flex-1 pt-16 md:pt-20 relative z-10">{children}</main>
         <Footer socialLinks={socialLinks} />
       </div>
     </MotionWrapper>

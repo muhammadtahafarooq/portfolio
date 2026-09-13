@@ -68,7 +68,7 @@ export default function ContactPage() {
                   </p>
                   <a
                     href="mailto:muhammadtahafarooq22@gmail.com"
-                    className="text-text hover:text-primary transition-colors duration-300 text-body-lg"
+                    className="text-text hover:text-primary transition-colors duration-300 text-body-lg break-all"
                   >
                     muhammadtahafarooq22@gmail.com
                   </a>

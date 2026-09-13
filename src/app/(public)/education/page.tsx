@@ -39,7 +39,7 @@ export default async function EducationPage() {
                 direction="up"
                 delay={0.15}
               >
-                <div className="tech-grid relative border border-border p-8 aspect-square flex items-center justify-center">
+                <div className="tech-grid relative border border-border p-8 aspect-square md:aspect-square max-h-[200px] md:max-h-none flex items-center justify-center">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border border-border opacity-60" />
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full border border-primary/30" />
@@ -64,7 +64,7 @@ export default async function EducationPage() {
             </div>
 
             {/* Education Entries */}
-            <div className="mt-24 border-t border-border pt-12 space-y-12">
+            <div className="mt-12 md:mt-24 border-t border-border pt-12 space-y-12">
               {education.length > 0 ? (
                 education.map((edu, index) => (
                   <Reveal key={edu.id} delay={index * 0.1}>
@@ -118,7 +118,7 @@ export default async function EducationPage() {
 
             {/* Navigation Row */}
             <Reveal>
-              <div className="border-t border-b border-border mt-24 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="border-t border-b border-border mt-12 md:mt-24 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <Link
                   href="/certifications"
                   className="font-mono text-text-secondary hover:text-primary uppercase text-[13px] tracking-technical transition-colors duration-300 flex items-center gap-2"

@@ -27,7 +27,7 @@ export function HomeNavbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/86 backdrop-blur-md border-b border-border">
-      <nav className="container-main h-20 flex items-center justify-between">
+      <nav className="container-main h-16 md:h-20 flex items-center justify-between">
         <Link href="/" className="relative group">
           <span className="text-lg font-semibold text-text group-hover:text-primary transition-colors">
             Muhammad Taha

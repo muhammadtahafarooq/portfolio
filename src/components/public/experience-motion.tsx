@@ -64,7 +64,7 @@ export function ExperienceMotion({ experience }: ExperienceMotionProps) {
             {/* Horizontal line */}
             <div className="hidden md:block absolute top-[52px] left-0 right-0 h-px bg-border" />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
               {journeyPhases.map((phase, i) => (
                 <Reveal key={phase.year} delay={0.2 + i * 0.1} direction="up">
                   <div className="relative flex flex-col items-center text-center md:px-6">

@@ -1,4 +1,0 @@
-fix: admin password update and forgot password fix
-
-- Updated admin password hash in Turso database
-- Created password_reset_tokens table (was missing, caused 500 on forgot password)

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
 
-const SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+const SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
 const COOKIE_NAME = 'admin-session'
 
 const publicAdminPaths = ['/admin/login', '/admin/forgot-password', '/admin/reset-password']

@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify as joseVerify } from 'jose'
 import { cookies } from 'next/headers'
 
-const SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret')
+const SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
 
 export const SESSION_CONFIG = {
   cookieName: 'admin-session',

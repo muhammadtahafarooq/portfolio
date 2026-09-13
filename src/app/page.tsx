@@ -82,7 +82,7 @@ export default async function HomePage() {
 
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <HeroMilkyWay />
-        <div className="container-main relative z-10 pt-20">
+        <div className="container-main relative z-10 pt-16 md:pt-20">
           <div className="grid-12 items-center min-h-[80vh]">
             <div className="col-span-12 md:col-span-5">
               <Reveal delay={0.1}>
@@ -215,7 +215,7 @@ export default async function HomePage() {
               <div className="space-y-8">
                 {skillCategories.map((category) => (
                   <div key={category.label}>
-                    <h3 className="font-technical-sm text-text-muted uppercase tracking-technical mb-4">
+                    <h3 className="technical-text text-text-muted uppercase tracking-technical mb-4">
                       {category.label}
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -247,7 +247,7 @@ export default async function HomePage() {
               <h2 className="heading-h2 mb-16">Featured Projects</h2>
             </Reveal>
 
-            <div className="space-y-32">
+            <div className="space-y-16 md:space-y-32">
               {projects.map((project, index) => {
                 const isReversed = index % 2 === 1
                 const technologiesList = project.technologies
@@ -315,7 +315,7 @@ export default async function HomePage() {
             </div>
 
             <Reveal>
-              <div className="mt-24 text-center">
+              <div className="mt-12 md:mt-24 text-center">
                 <Link href="/projects" className="btn-secondary">
                   View All Projects
                 </Link>

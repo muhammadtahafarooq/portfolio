@@ -127,7 +127,7 @@ export default async function ResumePage() {
                 {/* Resume Header */}
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-10">
                   {/* Photo */}
-                  <div className="w-[140px] h-[140px] rounded-full bg-surface border-2 border-border-base overflow-hidden shrink-0">
+                  <div className="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] md:w-[140px] md:h-[140px] rounded-full bg-surface border-2 border-border-base overflow-hidden shrink-0">
                     <Image
                       src={profile?.avatarUrl || '/images/profile.jpg'}
                       alt={displayName}
@@ -139,22 +139,22 @@ export default async function ResumePage() {
 
                   {/* Name & Info */}
                   <div className="text-center sm:text-left">
-                    <h1 className="font-h1 text-[40px] sm:text-[48px] font-bold text-text tracking-tight leading-none mb-2">
+                    <h1 className="heading-h1 text-[40px] sm:text-[48px] font-bold text-text tracking-tight leading-none mb-2">
                       {displayName.toUpperCase()}
                     </h1>
-                    <p className="font-body-md text-text-secondary mb-5">{displayTitle}</p>
+                    <p className="body-text text-text-secondary mb-5">{displayTitle}</p>
                     <div className="flex flex-wrap justify-center sm:justify-start gap-x-6 gap-y-2">
-                      <span className="flex items-center gap-2 font-technical-sm text-text-muted">
+                      <span className="flex items-center gap-2 technical-text text-text-muted">
                         <Phone size={14} />
                         <a href={`tel:${phone}`} className="hover:text-primary transition-colors">
                           {phone}
                         </a>
                       </span>
-                      <span className="flex items-center gap-2 font-technical-sm text-text-muted">
+                      <span className="flex items-center gap-2 technical-text text-text-muted">
                         <Globe size={14} />
                         {website.replace('https://', '')}
                       </span>
-                      <span className="flex items-center gap-2 font-technical-sm text-text-muted">
+                      <span className="flex items-center gap-2 technical-text text-text-muted">
                         <Mail size={14} />
                         <a
                           href={`mailto:${email}`}
@@ -163,7 +163,7 @@ export default async function ResumePage() {
                           {email}
                         </a>
                       </span>
-                      <span className="flex items-center gap-2 font-technical-sm text-text-muted">
+                      <span className="flex items-center gap-2 technical-text text-text-muted">
                         <MapPin size={14} />
                         {location}
                       </span>
@@ -189,39 +189,35 @@ export default async function ResumePage() {
                 <div className="thin-divider mb-10" />
 
                 {/* Two Column Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-6 md:gap-10">
                   {/* Left Column */}
                   <div className="space-y-10">
                     {/* About Me */}
                     <Reveal>
                       <div>
-                        <h2 className="font-h3 text-[20px] font-bold text-text mb-4">
+                        <h2 className="heading-h3 text-[20px] font-bold text-text mb-4">
                           {sectionAbout}
                         </h2>
-                        <p className="font-body-md text-text-secondary leading-relaxed">
-                          {aboutMe}
-                        </p>
+                        <p className="body-text text-text-secondary leading-relaxed">{aboutMe}</p>
                       </div>
                     </Reveal>
 
                     {/* Education */}
                     <Reveal>
                       <div>
-                        <h2 className="font-h3 text-[20px] font-bold text-text mb-4">
+                        <h2 className="heading-h3 text-[20px] font-bold text-text mb-4">
                           {sectionEducation}
                         </h2>
                         {education.map((edu) => (
                           <div key={edu.id}>
-                            <p className="font-body-md font-semibold text-text">
+                            <p className="body-text font-semibold text-text">
                               {edu.qualification} in {edu.program}
                             </p>
-                            <p className="font-body-md text-text-secondary">{edu.institution}</p>
+                            <p className="body-text text-text-secondary">{edu.institution}</p>
                             {educationNote && (
-                              <p className="font-technical-sm text-text-muted mt-1">
-                                {educationNote}
-                              </p>
+                              <p className="technical-text text-text-muted mt-1">{educationNote}</p>
                             )}
-                            <p className="font-technical-sm text-text-muted">
+                            <p className="technical-text text-text-muted">
                               {edu.startDate?.substring(0, 4)} – {edu.endDate?.substring(0, 4)}
                             </p>
                           </div>
@@ -232,16 +228,14 @@ export default async function ResumePage() {
                     {/* Skills */}
                     <Reveal>
                       <div>
-                        <h2 className="font-h3 text-[20px] font-bold text-text mb-4">
+                        <h2 className="heading-h3 text-[20px] font-bold text-text mb-4">
                           {sectionSkills}
                         </h2>
                         <div className="space-y-4">
                           {Array.from(skillGroups.entries()).map(([category, categorySkills]) => (
                             <div key={category}>
-                              <p className="font-technical-sm font-bold text-text mb-1">
-                                {category}
-                              </p>
-                              <p className="font-body-md text-text-secondary">
+                              <p className="technical-text font-bold text-text mb-1">{category}</p>
+                              <p className="body-text text-text-secondary">
                                 {categorySkills.map((s) => s.name).join(' • ')}
                               </p>
                             </div>
@@ -253,10 +247,10 @@ export default async function ResumePage() {
                     {/* Language */}
                     <Reveal>
                       <div>
-                        <h2 className="font-h3 text-[20px] font-bold text-text mb-4">
+                        <h2 className="heading-h3 text-[20px] font-bold text-text mb-4">
                           {sectionLanguage}
                         </h2>
-                        <ul className="space-y-1 font-body-md text-text-secondary">
+                        <ul className="space-y-1 body-text text-text-secondary">
                           {languages.map((lang) => (
                             <li key={lang.name}>
                               {lang.name} — {lang.level}
@@ -272,7 +266,7 @@ export default async function ResumePage() {
                     {/* Projects */}
                     <Reveal>
                       <div>
-                        <h2 className="font-h3 text-[20px] font-bold text-text mb-6">
+                        <h2 className="heading-h3 text-[20px] font-bold text-text mb-6">
                           {sectionProjects}
                         </h2>
                         <div className="space-y-6">
@@ -281,26 +275,26 @@ export default async function ResumePage() {
                             .map((project: Project) => (
                               <div key={project.id}>
                                 <div className="flex items-center justify-between mb-1">
-                                  <h3 className="font-body-md font-semibold text-text">
+                                  <h3 className="body-text font-semibold text-text">
                                     {project.title}
                                   </h3>
-                                  <span className="font-technical-sm text-text-muted bg-surface px-2 py-0.5 rounded border border-border-base">
+                                  <span className="technical-text text-text-muted bg-surface px-2 py-0.5 rounded border border-border-base">
                                     {getProjectYear(project.createdAt)}
                                   </span>
                                 </div>
-                                <p className="font-technical-sm text-text-muted mb-1">
+                                <p className="technical-text text-text-muted mb-1">
                                   {labelDescription}
                                 </p>
-                                <p className="font-body-md text-text-secondary text-sm mb-2">
+                                <p className="body-text text-text-secondary text-sm mb-2">
                                   {project.description?.substring(0, 120)}
                                   {project.description && project.description.length > 120
                                     ? '...'
                                     : ''}
                                 </p>
-                                <p className="font-technical-sm text-text-muted mb-1">
+                                <p className="technical-text text-text-muted mb-1">
                                   {labelTechnologies}
                                 </p>
-                                <p className="font-body-md text-text-secondary text-sm">
+                                <p className="body-text text-text-secondary text-sm">
                                   {(() => {
                                     try {
                                       const techs = JSON.parse(project.technologies || '[]')
@@ -323,19 +317,17 @@ export default async function ResumePage() {
                     {/* Certification */}
                     <Reveal>
                       <div>
-                        <h2 className="font-h3 text-[20px] font-bold text-text mb-4">
+                        <h2 className="heading-h3 text-[20px] font-bold text-text mb-4">
                           {sectionCertification}
                         </h2>
                         {certifications.map((cert: Certification) => (
                           <div key={cert.id}>
-                            <p className="font-body-md font-semibold text-text">{cert.name}</p>
-                            <p className="font-body-md text-text-secondary">
+                            <p className="body-text font-semibold text-text">{cert.name}</p>
+                            <p className="body-text text-text-secondary">
                               {labelOrganizedBy} {cert.issuer}
                             </p>
                             {certificationNote && (
-                              <p className="font-body-md text-text-secondary">
-                                {certificationNote}
-                              </p>
+                              <p className="body-text text-text-secondary">{certificationNote}</p>
                             )}
                           </div>
                         ))}
@@ -349,11 +341,11 @@ export default async function ResumePage() {
             {/* Access Full Record CTA */}
             {resume?.pdfUrl && (
               <Reveal>
-                <div className="border border-border-base relative overflow-hidden py-16 px-8 text-center mt-24">
+                <div className="border border-border-base relative overflow-hidden py-10 px-5 md:py-16 md:px-8 text-center mt-12 md:mt-24">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
                   <div className="relative z-10">
                     <h2 className="heading-h2 text-text mb-4">{ctaTitle}</h2>
-                    <p className="font-body-md text-text-secondary mb-8 max-w-md mx-auto">
+                    <p className="body-text text-text-secondary mb-8 max-w-md mx-auto">
                       {ctaDescription}
                     </p>
                     <a
@@ -370,7 +362,7 @@ export default async function ResumePage() {
 
             {/* Bottom CTA */}
             <Reveal>
-              <div className="border-t border-border mt-24 pt-16 text-center">
+              <div className="border-t border-border mt-12 md:mt-24 pt-12 md:pt-16 text-center">
                 <p className="section-label mb-4">{bottomLabel}</p>
                 <h2 className="heading-h2 mb-6">{bottomTitle}</h2>
                 <Link href="/contact" className="btn-primary inline-flex items-center gap-3 group">

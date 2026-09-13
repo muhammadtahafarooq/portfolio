@@ -65,13 +65,13 @@ export default async function AboutPage() {
                     priority
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-background/90 to-transparent">
-                    <p className="font-technical-sm text-text-primary uppercase tracking-technical mb-2">
+                    <p className="technical-text text-text-primary uppercase tracking-technical mb-2">
                       Full-Stack
                     </p>
-                    <p className="font-technical-sm text-text-primary uppercase tracking-technical mb-2">
+                    <p className="technical-text text-text-primary uppercase tracking-technical mb-2">
                       AI Developer
                     </p>
-                    <p className="font-technical-sm text-text-primary uppercase tracking-technical">
+                    <p className="technical-text text-text-primary uppercase tracking-technical">
                       Digital Craftsman
                     </p>
                   </div>
@@ -81,7 +81,7 @@ export default async function AboutPage() {
 
             {/* Divider */}
             <Reveal>
-              <div className="thin-divider my-24" />
+              <div className="thin-divider my-12 md:my-24" />
             </Reveal>
 
             {/* Professional Profile */}
@@ -121,24 +121,24 @@ export default async function AboutPage() {
               >
                 <div className="border border-border-base p-8 space-y-6 bg-surface">
                   <div>
-                    <p className="font-technical-sm text-text-muted uppercase tracking-technical mb-1">
+                    <p className="technical-text text-text-muted uppercase tracking-technical mb-1">
                       ROLE
                     </p>
-                    <p className="font-body-lg text-text-primary">Full-Stack + AI Developer</p>
+                    <p className="body-text-lg text-text-primary">Full-Stack + AI Developer</p>
                   </div>
                   <div className="thin-divider" />
                   <div>
-                    <p className="font-technical-sm text-text-muted uppercase tracking-technical mb-1">
+                    <p className="technical-text text-text-muted uppercase tracking-technical mb-1">
                       LOCATION
                     </p>
-                    <p className="font-body-lg text-text-primary">Multan, Pakistan</p>
+                    <p className="body-text-lg text-text-primary">Multan, Pakistan</p>
                   </div>
                   <div className="thin-divider" />
                   <div>
-                    <p className="font-technical-sm text-text-muted uppercase tracking-technical mb-1">
+                    <p className="technical-text text-text-muted uppercase tracking-technical mb-1">
                       FOCUS
                     </p>
-                    <p className="font-body-lg text-text-primary">
+                    <p className="body-text-lg text-text-primary">
                       Building thoughtful, interactive, and visually refined digital experiences.
                     </p>
                   </div>
@@ -148,7 +148,7 @@ export default async function AboutPage() {
 
             {/* Profile CTA */}
             <Reveal>
-              <div className="border-t border-border-base mt-24 pt-12 flex gap-4">
+              <div className="border-t border-border-base mt-12 md:mt-24 pt-12 flex gap-4">
                 <Link href="/projects" className="btn-primary">
                   View Projects
                 </Link>

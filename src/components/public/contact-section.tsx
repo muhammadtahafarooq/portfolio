@@ -65,7 +65,7 @@ export function ContactSection() {
       </div>
 
       <div className="col-span-12 md:col-span-6 md:col-start-7">
-        <div className="glass-panel p-8">
+        <div className="glass-panel p-5 md:p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label htmlFor="home-name" className="block text-sm font-medium text-text mb-2">

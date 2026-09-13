@@ -51,7 +51,7 @@ export function Navbar({ socialLinks }: NavbarProps) {
         isScrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : 'bg-transparent'
       )}
     >
-      <nav className="container-main h-20 flex items-center justify-between">
+      <nav className="container-main h-16 md:h-20 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="relative group">
           <span className="text-lg font-semibold text-text group-hover:text-primary transition-colors">

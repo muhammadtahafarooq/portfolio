@@ -30,15 +30,15 @@ export default async function CertificationsPage() {
           <div className="grid-12">
             <div className="col-span-12 md:col-span-7">
               <Reveal>
-                <p className="font-technical-sm text-text-muted uppercase tracking-technical mb-6">
+                <p className="technical-text text-text-muted uppercase tracking-technical mb-6">
                   05 / CREDENTIALS
                 </p>
               </Reveal>
               <Reveal delay={0.1}>
-                <h1 className="font-h1 text-text-primary mb-6">Certifications & Achievements</h1>
+                <h1 className="heading-h1 text-text-primary mb-6">Certifications & Achievements</h1>
               </Reveal>
               <Reveal delay={0.2}>
-                <p className="font-body-lg text-text-secondary max-w-xl leading-body">
+                <p className="body-text-lg text-text-secondary max-w-xl leading-body">
                   Professional certifications and milestones that validate my expertise and
                   commitment to continuous learning and excellence.
                 </p>
@@ -69,10 +69,10 @@ export default async function CertificationsPage() {
       <section className="section-padding container-main">
         {certifications.length === 0 ? (
           <Reveal>
-            <p className="font-body-md text-text-muted">No certifications listed yet.</p>
+            <p className="body-text text-text-muted">No certifications listed yet.</p>
           </Reveal>
         ) : (
-          <div className="space-y-24">
+          <div className="space-y-16 md:space-y-24">
             {certifications.map((cert, index) => {
               const isImageLeft = index % 2 === 0
               const colImage = isImageLeft
@@ -102,19 +102,19 @@ export default async function CertificationsPage() {
 
                     <div className={`${colInfo} ${infoOrder}`}>
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="font-technical-sm text-text-muted uppercase tracking-technical">
+                        <span className="technical-text text-text-muted uppercase tracking-technical">
                           {certNum}
                         </span>
-                        <span className="font-technical-sm text-text-primary uppercase tracking-technical border border-border-base px-2 py-0.5">
+                        <span className="technical-text text-text-primary uppercase tracking-technical border border-border-base px-2 py-0.5">
                           CREDENTIAL
                         </span>
                       </div>
 
-                      <h2 className="font-h3 text-text-primary mb-4 hover:text-primary transition-colors duration-normal">
+                      <h2 className="heading-h3 text-text-primary mb-4 hover:text-primary transition-colors duration-normal">
                         {cert.name}
                       </h2>
 
-                      <p className="font-body-md text-text-secondary mb-6 max-w-lg leading-body">
+                      <p className="body-text text-text-secondary mb-6 max-w-lg leading-body">
                         {cert.issuer
                           ? `Issued by ${cert.issuer}`
                           : 'Professional certification validating expertise and skills.'}
@@ -130,7 +130,7 @@ export default async function CertificationsPage() {
                           href={CERTIFICATE_URL}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-technical-sm text-text-primary uppercase tracking-technical border-b border-text-primary pb-0.5 hover:text-primary hover:border-primary transition-colors"
+                          className="technical-text text-text-primary uppercase tracking-technical border-b border-text-primary pb-0.5 hover:text-primary hover:border-primary transition-colors"
                         >
                           View Certificate
                         </a>
@@ -155,7 +155,7 @@ export default async function CertificationsPage() {
             <div className="col-span-12 md:col-span-4">
               <Reveal>
                 <div className="sticky top-32">
-                  <p className="font-technical-sm text-text-muted uppercase mb-2">Milestones</p>
+                  <p className="technical-text text-text-muted uppercase mb-2">Milestones</p>
                   <h2 className="heading-h2 text-text-primary">Milestones</h2>
                 </div>
               </Reveal>
@@ -163,7 +163,7 @@ export default async function CertificationsPage() {
             <div className="col-span-12 md:col-span-8">
               {achievements.length === 0 ? (
                 <Reveal>
-                  <p className="font-body-md text-text-muted">No achievements listed yet.</p>
+                  <p className="body-text text-text-muted">No achievements listed yet.</p>
                 </Reveal>
               ) : (
                 <div className="relative border-l border-border pl-8 space-y-12">
@@ -172,11 +172,11 @@ export default async function CertificationsPage() {
                       <div className="relative">
                         <div className="absolute -left-[41px] top-1 w-3 h-3 rounded-full bg-primary shadow-glow md:block hidden" />
                         {achievement.date && (
-                          <p className="font-technical-sm text-primary mb-2">{achievement.date}</p>
+                          <p className="technical-text text-primary mb-2">{achievement.date}</p>
                         )}
                         <h3 className="heading-h3 text-text-primary mb-3">{achievement.title}</h3>
                         {achievement.description && (
-                          <p className="font-body-md text-text-secondary max-w-lg">
+                          <p className="body-text text-text-secondary max-w-lg">
                             {achievement.description}
                           </p>
                         )}
