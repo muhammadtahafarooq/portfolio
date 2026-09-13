@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -17,6 +19,7 @@ import {
   Home,
   User,
   Globe,
+  LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -44,9 +47,18 @@ const footerItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [loggingOut, setLoggingOut] = useState(false)
 
   const isActive = (href: string) =>
     href === '/admin' ? pathname === '/admin' : pathname.startsWith(href)
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/admin/login')
+    router.refresh()
+  }
 
   return (
     <nav className="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-surface border-r border-border-base flex flex-col py-6 px-3 z-50">
@@ -131,6 +143,14 @@ export function Sidebar() {
           <Settings size={16} />
           <span className="font-mono text-xs">Settings</span>
         </Link>
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="flex items-center gap-3 px-3 py-2 transition-colors duration-150 text-text-muted hover:bg-surface-hover hover:text-error rounded-sm text-sm w-full text-left disabled:opacity-50"
+        >
+          <LogOut size={16} />
+          <span className="font-mono text-xs">{loggingOut ? 'Logging out...' : 'Logout'}</span>
+        </button>
       </div>
     </nav>
   )
