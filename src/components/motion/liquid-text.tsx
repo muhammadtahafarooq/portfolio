@@ -32,6 +32,7 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
   }, [isInView, prefersReduced, text])
 
   const Tag = as
+  const words = text.split(' ')
 
   if (prefersReduced) {
     return (
@@ -46,7 +47,6 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
       <style>{`
         @media (prefers-reduced-motion: reduce) {
           .liquid-char { animation: none !important }
-          .liquid-float { animation: none !important }
         }
       `}</style>
       <motion.div
@@ -63,43 +63,50 @@ export function LiquidText({ text, className, as = 'h1' }: LiquidTextProps) {
           },
         }}
         aria-label={text}
-        className={showFloat ? 'liquid-float' : ''}
-        style={
-          showFloat
-            ? {
-                animation: 'liquid-float 4s ease-in-out infinite',
-              }
-            : undefined
-        }
       >
-        {text.split('').map((char, i) => (
-          <motion.span
-            key={`${char}-${i}`}
-            className="liquid-char inline-block"
-            style={{
-              color: '#F1EDE5',
-            }}
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: 30,
-                rotateX: -40,
-                filter: 'blur(4px)',
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                rotateX: 0,
-                filter: 'blur(0px)',
-                transition: {
-                  duration: 0.6,
-                  ease: [0.22, 1, 0.36, 1],
-                },
-              },
-            }}
+        {words.map((word, wordIndex) => (
+          <span
+            key={`word-${wordIndex}`}
+            className="inline-block"
+            style={
+              showFloat
+                ? {
+                    animation: `liquid-float 4s ease-in-out ${wordIndex * 0.5}s infinite`,
+                  }
+                : undefined
+            }
           >
-            {char === ' ' ? '\u00A0' : char}
-          </motion.span>
+            {word.split('').map((char, charIndex) => (
+              <motion.span
+                key={`${char}-${charIndex}`}
+                className="liquid-char inline-block"
+                style={{
+                  color: '#F1EDE5',
+                }}
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    y: 30,
+                    rotateX: -40,
+                    filter: 'blur(4px)',
+                  },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    rotateX: 0,
+                    filter: 'blur(0px)',
+                    transition: {
+                      duration: 0.6,
+                      ease: [0.22, 1, 0.36, 1],
+                    },
+                  },
+                }}
+              >
+                {char}
+              </motion.span>
+            ))}
+            {wordIndex < words.length - 1 && <span className="inline-block">&nbsp;</span>}
+          </span>
         ))}
       </motion.div>
     </Tag>
